@@ -1,6 +1,41 @@
 # SnippetBuilderCSharp
 
+## Command line with arguments
+
 ```
+dotnet run -p ./src/SnippetBuilderCSharp -- --name hello --paths ./HelloWorld.cs --output ./artifacts
+SnippetBuilderCSharp.exe --name hello --paths ./HelloWorld.cs --output ./artifacts
+```
+
+### Use recipe file
+
+```json
+[
+  {
+    "name": "sample1",
+    "paths": [
+      "./file1.cs"
+    ],
+    "output": "./output/"
+  },
+  {
+    "name": "sample2",
+    "paths": [
+      "./file2.cs",
+      "./file3.cs"
+    ],
+    "output": "./output/"
+  }
+]
+```
+
+```
+dotnet run -p ./src/SnippetBuilderCSharp -- --recipe ./recipe.json
+```
+
+## Interactive
+
+```sh
 dotnet run -p ./src/SnippetBuilderCSharp
 
 Enter the target file or directory paths
@@ -17,7 +52,7 @@ Building...
 Complete! Look ./artifacts
 ```
 
-```
+```sh
 cat ./artifacts/hello.code-snippet
 {
   "HelloWorld": {

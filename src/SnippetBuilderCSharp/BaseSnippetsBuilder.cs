@@ -17,10 +17,8 @@ namespace SnippetBuilderCSharp
             _outputName = outputName;
             FilePaths = new List<string>();
             foreach (var target in targets)
-            {
                 if (File.Exists(target)) FilePaths.Add(target);
                 else if (Directory.Exists(target)) FilePaths.AddRange(Directory.GetFiles(target, "*.cs"));
-            }
 
             _outputDirectory = outputDirectory;
             if (!Directory.Exists(_outputDirectory)) Directory.CreateDirectory(_outputDirectory);

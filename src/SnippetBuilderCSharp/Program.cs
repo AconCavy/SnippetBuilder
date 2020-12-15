@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using SnippetBuilderCSharp.Commands;
 
@@ -26,7 +27,15 @@ namespace SnippetBuilderCSharp
                 commandBuilder.Register(new NameCommand());
                 commandBuilder.Register(new PathsCommand());
                 commandBuilder.Register(new OutputCommand());
+                commandBuilder.Register(new RecipeCommand());
                 commandBuilder.Build(args);
+
+                var recipe = commandBuilder.Resolve<RecipeCommand>() ?? new RecipeCommand();
+                if (recipe.Validate())
+                {
+                    foreach (var path in recipe.Parameters) await BuildFromConfigurationAsync(path);
+                    return;
+                }
             }
 
             var name = commandBuilder.Resolve<NameCommand>() ?? new NameCommand();
@@ -38,12 +47,12 @@ namespace SnippetBuilderCSharp
             var paths = commandBuilder.Resolve<PathsCommand>() ?? new PathsCommand();
             if (!paths.Validate()) throw new ArgumentException("paths");
 
-
+            var targets = paths.Parameters;
             var outputDirectory = output.Parameter;
             var outputName = name.Parameter;
 
             if (interact) Console.WriteLine("Building...");
-            await new VisualStudioCodeSnippetsBuilder(paths.Parameters, outputDirectory, outputName).BuildAsync();
+            await new VisualStudioCodeSnippetsBuilder(targets, outputDirectory, outputName).BuildAsync();
 
             if (interact)
             {
@@ -89,6 +98,20 @@ namespace SnippetBuilderCSharp
         {
             Console.WriteLine("Enter any key to close");
             _ = Console.ReadLine();
+        }
+
+        private static async ValueTask BuildFromConfigurationAsync(string path)
+        {
+            await using var stream = new FileStream(path, FileMode.Open);
+            var recipes = await JsonSerializer.DeserializeAsync<Recipe[]>(stream);
+            foreach (var recipe in recipes)
+            {
+                var targets = recipe.Paths ?? Array.Empty<string>();
+                var outputDirectory = recipe.Output ?? DefaultOutputDirectory;
+                var outputName = recipe.Name ?? DefaultOutputName;
+                await new VisualStudioCodeSnippetsBuilder(targets, outputDirectory, outputName)
+                    .BuildAsync();
+            }
         }
     }
 }

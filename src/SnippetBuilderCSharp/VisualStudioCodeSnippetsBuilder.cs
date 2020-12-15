@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -16,8 +17,8 @@ namespace SnippetBuilderCSharp
         private class Snippet
         {
             [JsonPropertyName("scope")] public string Scope { get; set; } = "csharp";
-            [JsonPropertyName("prefix")] public string[] Prefix { get; set; }
-            [JsonPropertyName("body")] public string[] Body { get; set; }
+            [JsonPropertyName("prefix")] public string[] Prefix { get; set; } = Array.Empty<string>();
+            [JsonPropertyName("body")] public string[] Body { get; set; } = Array.Empty<string>();
         }
 
         public VisualStudioCodeSnippetsBuilder(IEnumerable<string> targets, string outputDirectory, string outputName)
@@ -48,7 +49,7 @@ namespace SnippetBuilderCSharp
             var fileName = Path.GetFileNameWithoutExtension(filePath);
             var skip = true;
             var body = new List<string>();
-            string line;
+            string? line;
             while ((line = await streamReader.ReadLineAsync()) != null && !cancellationToken.IsCancellationRequested)
             {
                 if (string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) continue;

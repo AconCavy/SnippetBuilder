@@ -1,28 +1,28 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using SnippetBuilderCSharp.IO;
 
-namespace SnippetBuilderCSharp.IO
+namespace SnippetBuilderCSharp.Test.Fakes
 {
-    public class FileBroker : IFileBroker
+    public class FakeFileBroker : IFileBroker
     {
         public bool ExistsFile(string path)
         {
-            return File.Exists(path);
+            return path.EndsWith(".cs");
         }
 
         public bool ExistsDirectory(string path)
         {
-            return Directory.Exists(path);
+            return !path.EndsWith(".*");
         }
 
         public IEnumerable<string> GetFilePaths(string path, string searchPattern)
         {
-            return Directory.GetFiles(path, searchPattern);
+            return Array.Empty<string>();
         }
 
         public void CreateDirectory(string path)
         {
-            Directory.CreateDirectory(path);
         }
     }
 }

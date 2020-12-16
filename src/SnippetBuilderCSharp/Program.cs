@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using SnippetBuilderCSharp.Commands;
 
@@ -15,103 +15,87 @@ namespace SnippetBuilderCSharp
         private static async Task Main(string[]? args)
         {
             var commandBuilder = new CommandProvider();
-            var interact = args is null || !args.Any();
 
-            if (interact)
+            if (args is null || !args.Any())
             {
-                Interact(commandBuilder);
-            }
-            else
-            {
-                commandBuilder.Register(new HelpCommand());
-                commandBuilder.Register(new NameCommand());
-                commandBuilder.Register(new PathsCommand());
-                commandBuilder.Register(new OutputCommand());
-                commandBuilder.Register(new RecipeCommand());
-                commandBuilder.Build(args);
-
-                var recipe = commandBuilder.Resolve<RecipeCommand>() ?? new RecipeCommand();
-                if (recipe.Validate())
-                {
-                    foreach (var path in recipe.Parameters) await BuildFromConfigurationAsync(path);
-                    return;
-                }
+                await InteractAsync();
+                return;
             }
 
-            var name = commandBuilder.Resolve<NameCommand>() ?? new NameCommand();
-            name.Add(DefaultOutputName);
-            if (!name.Validate()) throw new ArgumentException("name");
-            var output = commandBuilder.Resolve<OutputCommand>() ?? new OutputCommand();
-            output.Add(DefaultOutputDirectory);
-            if (!output.Validate()) throw new ArgumentException("output");
-            var paths = commandBuilder.Resolve<PathsCommand>() ?? new PathsCommand();
-            if (!paths.Validate()) throw new ArgumentException("paths");
+            commandBuilder.RegisterCommand(new HelpCommand());
+            commandBuilder.RegisterCommand(new NameCommand());
+            commandBuilder.RegisterCommand(new PathsCommand());
+            commandBuilder.RegisterCommand(new OutputCommand());
+            commandBuilder.RegisterCommand(new RecipeCommand());
+            commandBuilder.Build(args);
 
-            var targets = paths.Parameters;
-            var outputDirectory = output.Parameter;
-            var outputName = name.Parameter;
+            var recipes = new List<Recipe>();
 
-            if (interact) Console.WriteLine("Building...");
-            await new VisualStudioCodeSnippetsBuilder(targets, outputDirectory, outputName).BuildAsync();
+            if (commandBuilder.TryResolveCommand<RecipeCommand>(out var recipeCommand))
+                if (recipeCommand.Validate())
+                    await foreach (var recipe in recipeCommand.GetRecipesAsync())
+                        recipes.Add(recipe);
 
-            if (interact)
+            var hasName = commandBuilder.TryResolveCommand<NameCommand>(out var nameCommand);
+            var hasOutput = commandBuilder.TryResolveCommand<OutputCommand>(out var outputCommand);
+            var hasPaths = commandBuilder.TryResolveCommand<PathsCommand>(out var pathsCommand);
+
+            if (hasName && hasOutput && hasPaths)
             {
-                Console.WriteLine($"Complete! Look {Path.GetFullPath(outputDirectory)}");
-                Close();
+                var recipe = new Recipe();
+                nameCommand.ApplyTo(recipe);
+                outputCommand.ApplyTo(recipe);
+                pathsCommand.ApplyTo(recipe);
+                if (nameCommand.Validate() && outputCommand.Validate() && pathsCommand.Validate()) recipes.Add(recipe);
+            }
+
+            foreach (var recipe in recipes)
+            {
+                if (recipe.Paths is null || !recipe.Paths.Any()) continue;
+                recipe.Output ??= DefaultOutputDirectory;
+                recipe.Name ??= DefaultOutputName;
+                await new VisualStudioCodeSnippetsBuilder(recipe).BuildAsync();
             }
         }
 
-        private static void Interact(CommandProvider commandProvider)
+        private static async ValueTask InteractAsync()
         {
-            var paths = new PathsCommand();
+            static void Close()
+            {
+                Console.WriteLine("Enter any key to close");
+                _ = Console.ReadLine();
+            }
+
+            var recipe = new Recipe();
+            var paths = new List<string>();
             Console.WriteLine("Enter the target file or directory paths");
             Console.WriteLine("Enter a blank to go to the next step");
             string? line;
             while (!string.IsNullOrEmpty(line = Console.ReadLine()))
-                foreach (var path in line.Split(" "))
-                    paths.Add(path);
+                paths.AddRange(line.Split(" "));
 
-            if (!paths.Validate())
+            recipe.Paths = paths.Where(x => File.Exists(x) || Directory.Exists(x)).ToArray();
+            if (recipe.Paths.Any())
             {
                 Console.WriteLine("No valid file or directory paths");
                 Close();
             }
 
-            var output = new OutputCommand();
             Console.WriteLine($"Enter the output directory (default is {DefaultOutputDirectory})");
             var outputDirectory = Console.ReadLine();
-            if (!string.IsNullOrEmpty(outputDirectory)) output.Add(outputDirectory);
+            recipe.Output = string.IsNullOrEmpty(outputDirectory) ? DefaultOutputDirectory : outputDirectory;
             Console.WriteLine();
 
-            var name = new NameCommand();
             Console.WriteLine($"Enter the output file name (no ext.) (default is {DefaultOutputName})");
             var outputName = Console.ReadLine();
-            if (!string.IsNullOrEmpty(outputName)) name.Add(outputName);
+            recipe.Name = string.IsNullOrEmpty(outputName) ? DefaultOutputName : outputName;
             Console.WriteLine();
 
-            commandProvider.Register(paths);
-            commandProvider.Register(output);
-            commandProvider.Register(name);
-        }
+            Console.WriteLine("Building...");
+            await new VisualStudioCodeSnippetsBuilder(recipe).BuildAsync();
 
-        private static void Close()
-        {
-            Console.WriteLine("Enter any key to close");
-            _ = Console.ReadLine();
-        }
-
-        private static async ValueTask BuildFromConfigurationAsync(string path)
-        {
-            await using var stream = new FileStream(path, FileMode.Open);
-            var recipes = await JsonSerializer.DeserializeAsync<Recipe[]>(stream);
-            foreach (var recipe in recipes)
-            {
-                var targets = recipe.Paths ?? Array.Empty<string>();
-                var outputDirectory = recipe.Output ?? DefaultOutputDirectory;
-                var outputName = recipe.Name ?? DefaultOutputName;
-                await new VisualStudioCodeSnippetsBuilder(targets, outputDirectory, outputName)
-                    .BuildAsync();
-            }
+            Console.WriteLine($"Complete! Look {Path.GetFullPath(recipe.Output)}");
+            Close();
         }
     }
 }

@@ -1,26 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SnippetBuilderCSharp
 {
-    public abstract class BaseSnippetsBuilder : ISnippetsBuilder
+    public abstract class SnippetsBuilderBase : ISnippetsBuilder
     {
         protected List<string> FilePaths { get; }
         protected abstract string Extension { get; }
         private readonly string _outputDirectory;
         private readonly string _outputName;
 
-        protected BaseSnippetsBuilder(IEnumerable<string> targets, string outputDirectory, string outputName)
+        protected SnippetsBuilderBase(Recipe recipe)
         {
-            _outputName = outputName;
-            FilePaths = new List<string>();
-            foreach (var target in targets)
-                if (File.Exists(target)) FilePaths.Add(target);
-                else if (Directory.Exists(target)) FilePaths.AddRange(Directory.GetFiles(target, "*.cs"));
+            if (recipe.Name is null) throw new ArgumentNullException(nameof(recipe.Name));
+            if (recipe.Output is null) throw new ArgumentNullException(nameof(recipe.Output));
+            if (recipe.Paths is null) throw new ArgumentNullException(nameof(recipe.Paths));
 
-            _outputDirectory = outputDirectory;
+            _outputName = recipe.Name;
+            FilePaths = new List<string>();
+            foreach (var path in recipe.Paths)
+                if (File.Exists(path)) FilePaths.Add(path);
+                else if (Directory.Exists(path)) FilePaths.AddRange(Directory.GetFiles(path, "*.cs"));
+
+            _outputDirectory = recipe.Output;
             if (!Directory.Exists(_outputDirectory)) Directory.CreateDirectory(_outputDirectory);
         }
 

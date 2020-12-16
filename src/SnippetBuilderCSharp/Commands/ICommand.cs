@@ -7,5 +7,6 @@ namespace SnippetBuilderCSharp.Commands
         string Parameter { get; }
         IEnumerable<string> Parameters { get; }
         bool Validate();
+        void Append(string parameter);
     }
 }

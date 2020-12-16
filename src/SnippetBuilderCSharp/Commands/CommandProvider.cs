@@ -6,11 +6,11 @@ namespace SnippetBuilderCSharp.Commands
 {
     public class CommandProvider
     {
-        private readonly List<CommandBase> _commands;
+        private readonly List<ICommand> _commands;
 
         public CommandProvider()
         {
-            _commands = new List<CommandBase>();
+            _commands = new List<ICommand>();
         }
 
         public void Build(string[]? args)
@@ -29,20 +29,37 @@ namespace SnippetBuilderCSharp.Commands
                         ShowHelp();
                     else
                         while (queue.TryPeek(out var top) && !top.StartsWith("-"))
-                            command.Add(queue.Dequeue());
+                            command.Append(queue.Dequeue());
                 }
             }
         }
 
-        public void Register<T>(T command) where T : CommandBase
+        public void RegisterCommand<T>(T command) where T : ICommand
         {
             _commands.Add(command);
         }
 
-        public T? Resolve<T>() where T : CommandBase
+        public T ResolveCommand<T>() where T : ICommand
+        {
+            return _commands.OfType<T>().First();
+        }
+
+        public IEnumerable<T> ResolveCommands<T>() where T : ICommand
+        {
+            return _commands.OfType<T>();
+        }
+
+        public bool TryResolveCommand<T>(out T result) where T : ICommand
         {
             var commands = _commands.OfType<T>().ToArray();
-            return commands.Any() ? commands[0] : null;
+            if (commands.Any())
+            {
+                result = commands.First();
+                return true;
+            }
+
+            result = default!;
+            return false;
         }
 
         private void ShowHelp()

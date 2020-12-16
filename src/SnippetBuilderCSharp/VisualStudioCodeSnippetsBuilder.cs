@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SnippetBuilderCSharp
 {
-    public class VisualStudioCodeSnippetsBuilder : BaseSnippetsBuilder
+    public class VisualStudioCodeSnippetsBuilder : SnippetsBuilderBase
     {
         protected override string Extension { get; } = ".code-snippets";
         private readonly Dictionary<string, Snippet> _dictionary;
@@ -21,8 +21,7 @@ namespace SnippetBuilderCSharp
             [JsonPropertyName("body")] public string[] Body { get; set; } = Array.Empty<string>();
         }
 
-        public VisualStudioCodeSnippetsBuilder(IEnumerable<string> targets, string outputDirectory, string outputName)
-            : base(targets, outputDirectory, outputName)
+        public VisualStudioCodeSnippetsBuilder(Recipe recipe) : base(recipe)
         {
             _dictionary = new Dictionary<string, Snippet>();
         }

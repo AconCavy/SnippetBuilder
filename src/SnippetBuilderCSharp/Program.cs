@@ -16,18 +16,20 @@ namespace SnippetBuilderCSharp
         private static async Task Main(string[]? args)
         {
             var commandBuilder = new CommandProvider();
+            var fileBroker = new FileBroker();
+            var fileStreamBroker = new FileStreamBroker();
 
             if (args is null || !args.Any())
             {
-                await InteractAsync();
+                await InteractAsync(fileStreamBroker, fileBroker);
                 return;
             }
 
             commandBuilder.RegisterCommand(new HelpCommand());
             commandBuilder.RegisterCommand(new NameCommand());
-            commandBuilder.RegisterCommand(new PathsCommand());
+            commandBuilder.RegisterCommand(new PathsCommand(fileBroker));
             commandBuilder.RegisterCommand(new OutputCommand());
-            commandBuilder.RegisterCommand(new RecipeCommand());
+            commandBuilder.RegisterCommand(new RecipeCommand(fileStreamBroker, fileBroker));
             commandBuilder.Build(args);
 
             var recipes = new List<Recipe>();
@@ -47,6 +49,8 @@ namespace SnippetBuilderCSharp
                 nameCommand.ApplyTo(recipe);
                 outputCommand.ApplyTo(recipe);
                 pathsCommand.ApplyTo(recipe);
+                if (!nameCommand.Validate()) nameCommand.Append(DefaultOutputName);
+                if (!outputCommand.Validate()) outputCommand.Append(DefaultOutputDirectory);
                 if (nameCommand.Validate() && outputCommand.Validate() && pathsCommand.Validate()) recipes.Add(recipe);
             }
 
@@ -55,12 +59,12 @@ namespace SnippetBuilderCSharp
                 if (recipe.Paths is null || !recipe.Paths.Any()) continue;
                 recipe.Output ??= DefaultOutputDirectory;
                 recipe.Name ??= DefaultOutputName;
-                await new VisualStudioCodeSnippetsBuilder(recipe, new FileStreamBroker(), new FileBroker())
+                await new VisualStudioCodeSnippetsBuilder(recipe, fileStreamBroker, fileBroker)
                     .BuildAsync();
             }
         }
 
-        private static async ValueTask InteractAsync()
+        private static async ValueTask InteractAsync(IFileStreamBroker fileStreamBroker, IFileBroker fileBroker)
         {
             static void Close()
             {
@@ -94,7 +98,7 @@ namespace SnippetBuilderCSharp
             Console.WriteLine();
 
             Console.WriteLine("Building...");
-            await new VisualStudioCodeSnippetsBuilder(recipe, new FileStreamBroker(), new FileBroker()).BuildAsync();
+            await new VisualStudioCodeSnippetsBuilder(recipe, fileStreamBroker, fileBroker).BuildAsync();
 
             Console.WriteLine($"Complete! Look {Path.GetFullPath(recipe.Output)}");
             Close();

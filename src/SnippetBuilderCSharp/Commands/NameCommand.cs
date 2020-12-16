@@ -1,11 +1,13 @@
-﻿namespace SnippetBuilderCSharp.Commands
+﻿using System.Linq;
+
+namespace SnippetBuilderCSharp.Commands
 {
     [Command(LongName = "name", ShortName = "n", Description = "Output file name")]
     public class NameCommand : CommandBase, IRecipeApplier
     {
         public override bool Validate()
         {
-            return true;
+            return Params.Any();
         }
 
         public void ApplyTo(Recipe recipe)

@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Moq;
 using NUnit.Framework;
+using SnippetBuilderCSharp.IO;
 using SnippetBuilderCSharp.Test.Fakes;
 
 namespace SnippetBuilderCSharp.Test
@@ -12,26 +14,40 @@ namespace SnippetBuilderCSharp.Test
         public void InitializeTest()
         {
             var baseRecipe = CreateRecipe();
-            var fakeFileStreamBroker = new FakeFileStreamBroker();
-            var fakeFileBroker = new FakeFileBroker();
+            var mockFileStreamBroker = new Mock<IFileStreamBroker>().Object;
+            var mockFileBroker = new Mock<IFileBroker>().Object;
 
             Assert.Throws<ArgumentNullException>(() =>
                 _ = new VisualStudioCodeSnippetsBuilder(
                     new Recipe {Output = baseRecipe.Output, Paths = baseRecipe.Paths},
-                    fakeFileStreamBroker,
-                    fakeFileBroker));
+                    mockFileStreamBroker,
+                    mockFileBroker));
 
             Assert.Throws<ArgumentNullException>(() =>
                 _ = new VisualStudioCodeSnippetsBuilder(
                     new Recipe {Name = baseRecipe.Name, Paths = baseRecipe.Paths},
-                    fakeFileStreamBroker,
-                    fakeFileBroker));
+                    mockFileStreamBroker,
+                    mockFileBroker));
 
             Assert.Throws<ArgumentNullException>(() =>
                 _ = new VisualStudioCodeSnippetsBuilder(
                     new Recipe {Name = baseRecipe.Name, Output = baseRecipe.Output},
-                    fakeFileStreamBroker,
-                    fakeFileBroker));
+                    mockFileStreamBroker,
+                    mockFileBroker));
+        }
+
+        [Test]
+        public void InitializeWithCreateDirectoryTest()
+        {
+            var recipe = CreateRecipe();
+            var fakeFileStreamBroker = new FakeFileStreamBroker();
+            var mockFileBroker = new Mock<IFileBroker>();
+            mockFileBroker.Setup(x => x.ExistsFile(It.IsAny<string>())).Returns(true);
+            mockFileBroker.Setup(x => x.ExistsDirectory(It.IsAny<string>())).Returns(false);
+
+            Assert.DoesNotThrow(() =>
+                _ = new VisualStudioCodeSnippetsBuilder(recipe, fakeFileStreamBroker, mockFileBroker.Object));
+            mockFileBroker.Verify(x => x.CreateDirectory(It.IsAny<string>()), Times.Once);
         }
 
         [Test]

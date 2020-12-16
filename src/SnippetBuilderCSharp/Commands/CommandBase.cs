@@ -5,7 +5,7 @@ namespace SnippetBuilderCSharp.Commands
 {
     public abstract class CommandBase : ICommand
     {
-        public string Parameter => Params.First();
+        public string Parameter => Params.FirstOrDefault() ?? string.Empty;
         public IEnumerable<string> Parameters => Params;
         protected readonly List<string> Params;
 
@@ -14,11 +14,11 @@ namespace SnippetBuilderCSharp.Commands
             Params = new List<string>();
         }
 
-        public void Add(string parameter)
+        public abstract bool Validate();
+
+        public void Append(string parameter)
         {
             Params.Add(parameter);
         }
-
-        public abstract bool Validate();
     }
 }

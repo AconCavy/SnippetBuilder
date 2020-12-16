@@ -6,10 +6,11 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using SnippetBuilderCSharp.IO;
 
 namespace SnippetBuilderCSharp
 {
-    public class VisualStudioCodeSnippetsBuilder : BaseSnippetsBuilder
+    public class VisualStudioCodeSnippetsBuilder : SnippetsBuilderBase
     {
         protected override string Extension { get; } = ".code-snippets";
         private readonly Dictionary<string, Snippet> _dictionary;
@@ -21,36 +22,33 @@ namespace SnippetBuilderCSharp
             [JsonPropertyName("body")] public string[] Body { get; set; } = Array.Empty<string>();
         }
 
-        public VisualStudioCodeSnippetsBuilder(IEnumerable<string> targets, string outputDirectory, string outputName)
-            : base(targets, outputDirectory, outputName)
+        public VisualStudioCodeSnippetsBuilder(Recipe recipe, IFileStreamBroker fileStreamBroker,
+            IFileBroker fileBroker) : base(recipe, fileStreamBroker, fileBroker)
         {
             _dictionary = new Dictionary<string, Snippet>();
         }
 
-        protected override async ValueTask BuildSnippetsAsync(FileStream fileStream,
-            CancellationToken cancellationToken)
+        public override async ValueTask<IEnumerable<string>> BuildSnippetsAsync(
+            CancellationToken cancellationToken = default)
         {
-            foreach (var filePath in FilePaths)
+            foreach (var path in FilePaths)
             {
-                var (section, snippet) = await CreateSnippetAsync(filePath, cancellationToken);
+                var (section, snippet) = await CreateSnippetAsync(path, cancellationToken).ConfigureAwait(false);
                 _dictionary[section] = snippet;
                 if (cancellationToken.IsCancellationRequested) break;
             }
 
             var options = new JsonSerializerOptions {WriteIndented = true};
-            await JsonSerializer.SerializeAsync(fileStream, _dictionary, options, cancellationToken);
+            var snippets = JsonSerializer.Serialize(_dictionary, options);
+            return new[] {snippets};
         }
 
-        private static async ValueTask<(string, Snippet)> CreateSnippetAsync(string filePath,
-            CancellationToken cancellationToken)
+        private async ValueTask<(string, Snippet)> CreateSnippetAsync(string path, CancellationToken cancellationToken)
         {
-            await using var input = new FileStream(filePath, FileMode.Open);
-            using var streamReader = new StreamReader(input);
-            var fileName = Path.GetFileNameWithoutExtension(filePath);
+            var name = Path.GetFileNameWithoutExtension(path);
             var skip = true;
             var body = new List<string>();
-            string? line;
-            while ((line = await streamReader.ReadLineAsync()) != null && !cancellationToken.IsCancellationRequested)
+            await foreach (var line in FileStreamBroker.ReadLinesAsync(path).WithCancellation(cancellationToken))
             {
                 if (string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) continue;
                 if (skip && line.Contains("using")) continue;
@@ -58,11 +56,11 @@ namespace SnippetBuilderCSharp
                 body.Add(line);
             }
 
-            var prefixes = new List<string> {fileName.ToLower()};
-            var abbreviation = new Regex("[a-z0-9]").Replace(fileName, "").ToLower();
+            var prefixes = new List<string> {name.ToLower()};
+            var abbreviation = new Regex("[a-z0-9]").Replace(name, "").ToLower();
             if (abbreviation.Length > 1) prefixes.Add(abbreviation);
 
-            return (fileName, new Snippet {Prefix = prefixes.ToArray(), Body = body.ToArray()});
+            return (name, new Snippet {Prefix = prefixes.ToArray(), Body = body.ToArray()});
         }
     }
 }

@@ -1,14 +1,18 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 
 namespace SnippetBuilderCSharp.Commands
 {
     [Command(LongName = "output", ShortName = "o", Description = "Output directory")]
-    public class OutputCommand : CommandBase
+    public class OutputCommand : CommandBase, IRecipeApplier
     {
         public override bool Validate()
         {
-            return Params.All(x => File.Exists(x) || Directory.Exists(x));
+            return Params.Any();
+        }
+
+        public void ApplyTo(Recipe recipe)
+        {
+            recipe.Output = Parameter;
         }
     }
 }

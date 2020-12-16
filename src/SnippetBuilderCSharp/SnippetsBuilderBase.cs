@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SnippetBuilderCSharp.IO;
 
 namespace SnippetBuilderCSharp
 {
@@ -10,35 +11,39 @@ namespace SnippetBuilderCSharp
     {
         protected List<string> FilePaths { get; }
         protected abstract string Extension { get; }
+        protected IFileStreamBroker FileStreamBroker { get; }
+        protected IFileBroker FileBroker { get; }
+
         private readonly string _outputDirectory;
         private readonly string _outputName;
 
-        protected SnippetsBuilderBase(Recipe recipe)
+        protected SnippetsBuilderBase(Recipe recipe, IFileStreamBroker fileStreamBroker, IFileBroker fileBroker)
         {
             if (recipe.Name is null) throw new ArgumentNullException(nameof(recipe.Name));
             if (recipe.Output is null) throw new ArgumentNullException(nameof(recipe.Output));
             if (recipe.Paths is null) throw new ArgumentNullException(nameof(recipe.Paths));
 
+            FileStreamBroker = fileStreamBroker;
+            FileBroker = fileBroker;
             _outputName = recipe.Name;
             FilePaths = new List<string>();
             foreach (var path in recipe.Paths)
-                if (File.Exists(path)) FilePaths.Add(path);
-                else if (Directory.Exists(path)) FilePaths.AddRange(Directory.GetFiles(path, "*.cs"));
+                if (FileBroker.ExistsFile(path)) FilePaths.Add(path);
+                else if (FileBroker.ExistsDirectory(path)) FilePaths.AddRange(FileBroker.GetFilePaths(path, "*.cs"));
 
             _outputDirectory = recipe.Output;
-            if (!Directory.Exists(_outputDirectory)) Directory.CreateDirectory(_outputDirectory);
+            if (!FileBroker.ExistsDirectory(_outputDirectory)) FileBroker.CreateDirectory(_outputDirectory);
         }
 
         public async ValueTask BuildAsync(CancellationToken cancellationToken = default)
         {
             var outputPath = Path.Combine(_outputDirectory, _outputName + Extension);
-            await using var fileStream = File.Exists(outputPath)
-                ? new FileStream(outputPath, FileMode.Truncate)
-                : File.Create(outputPath);
-            await BuildSnippetsAsync(fileStream, cancellationToken);
-            await fileStream.FlushAsync(cancellationToken);
+            var snippets = await BuildSnippetsAsync(cancellationToken).ConfigureAwait(false);
+            if (cancellationToken.IsCancellationRequested) return;
+            await FileStreamBroker.WriteLinesAsync(outputPath, snippets, cancellationToken).ConfigureAwait(false);
         }
 
-        protected abstract ValueTask BuildSnippetsAsync(FileStream fileStream, CancellationToken cancellationToken);
+        public abstract ValueTask<IEnumerable<string>> BuildSnippetsAsync(
+            CancellationToken cancellationToken = default);
     }
 }

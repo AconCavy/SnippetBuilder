@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SnippetBuilderCSharp.Commands;
+using SnippetBuilderCSharp.IO;
 
 namespace SnippetBuilderCSharp
 {
@@ -54,7 +55,8 @@ namespace SnippetBuilderCSharp
                 if (recipe.Paths is null || !recipe.Paths.Any()) continue;
                 recipe.Output ??= DefaultOutputDirectory;
                 recipe.Name ??= DefaultOutputName;
-                await new VisualStudioCodeSnippetsBuilder(recipe).BuildAsync();
+                await new VisualStudioCodeSnippetsBuilder(recipe, new FileStreamBroker(), new FileBroker())
+                    .BuildAsync();
             }
         }
 
@@ -92,7 +94,7 @@ namespace SnippetBuilderCSharp
             Console.WriteLine();
 
             Console.WriteLine("Building...");
-            await new VisualStudioCodeSnippetsBuilder(recipe).BuildAsync();
+            await new VisualStudioCodeSnippetsBuilder(recipe, new FileStreamBroker(), new FileBroker()).BuildAsync();
 
             Console.WriteLine($"Complete! Look {Path.GetFullPath(recipe.Output)}");
             Close();

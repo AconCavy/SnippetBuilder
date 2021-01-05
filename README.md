@@ -62,7 +62,6 @@ Complete! Look ./artifacts
 cat ./artifacts/hello.code-snippet
 {
   "HelloWorld": {
-    "scope": "csharp",
     "prefix": [
       "helloworld",
       "hw"

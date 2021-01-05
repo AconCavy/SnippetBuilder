@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using SnippetBuilderCSharp.IO;
+using SnippetBuilderCSharp.Models;
 
 namespace SnippetBuilderCSharp.Commands
 {

@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SnippetBuilderCSharp.IO;
+using SnippetBuilderCSharp.Models;
+using SnippetBuilderCSharp.Snippets;
 using SnippetBuilderCSharp.Test.Fakes;
 
 namespace SnippetBuilderCSharp.Test
@@ -18,19 +20,19 @@ namespace SnippetBuilderCSharp.Test
             var mockFileBroker = new Mock<IFileBroker>().Object;
 
             Assert.Throws<ArgumentNullException>(() =>
-                _ = new VisualStudioCodeSnippetsBuilder(
+                _ = new VisualStudioCodeSnippet(
                     new Recipe {Output = baseRecipe.Output, Paths = baseRecipe.Paths},
                     mockFileStreamBroker,
                     mockFileBroker));
 
             Assert.Throws<ArgumentNullException>(() =>
-                _ = new VisualStudioCodeSnippetsBuilder(
+                _ = new VisualStudioCodeSnippet(
                     new Recipe {Name = baseRecipe.Name, Paths = baseRecipe.Paths},
                     mockFileStreamBroker,
                     mockFileBroker));
 
             Assert.Throws<ArgumentNullException>(() =>
-                _ = new VisualStudioCodeSnippetsBuilder(
+                _ = new VisualStudioCodeSnippet(
                     new Recipe {Name = baseRecipe.Name, Output = baseRecipe.Output},
                     mockFileStreamBroker,
                     mockFileBroker));
@@ -46,7 +48,7 @@ namespace SnippetBuilderCSharp.Test
             mockFileBroker.Setup(x => x.ExistsDirectory(It.IsAny<string>())).Returns(false);
 
             Assert.DoesNotThrow(() =>
-                _ = new VisualStudioCodeSnippetsBuilder(recipe, fakeFileStreamBroker, mockFileBroker.Object));
+                _ = new VisualStudioCodeSnippet(recipe, fakeFileStreamBroker, mockFileBroker.Object));
             mockFileBroker.Verify(x => x.CreateDirectory(It.IsAny<string>()), Times.Once);
         }
 
@@ -57,7 +59,7 @@ namespace SnippetBuilderCSharp.Test
             var fakeFileStreamBroker = new FakeFileStreamBroker();
             var fakeFileBroker = new FakeFileBroker();
 
-            var sut = new VisualStudioCodeSnippetsBuilder(recipe, fakeFileStreamBroker, fakeFileBroker);
+            var sut = new VisualStudioCodeSnippet(recipe, fakeFileStreamBroker, fakeFileBroker);
             Assert.DoesNotThrowAsync(async () => await sut.BuildAsync());
         }
 
@@ -68,7 +70,7 @@ namespace SnippetBuilderCSharp.Test
             var fakeFileStreamBroker = new FakeFileStreamBroker();
             var fakeFileBroker = new FakeFileBroker();
 
-            var sut = new VisualStudioCodeSnippetsBuilder(recipe, fakeFileStreamBroker, fakeFileBroker);
+            var sut = new VisualStudioCodeSnippet(recipe, fakeFileStreamBroker, fakeFileBroker);
 
             var actual = (await sut.BuildSnippetsAsync()).First();
             const string expected = @"{

@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SnippetBuilderCSharp.Commands;
+using SnippetBuilderCSharp.Models;
 using SnippetBuilderCSharp.Test.Fakes;
 
 namespace SnippetBuilderCSharp.Test.Commands

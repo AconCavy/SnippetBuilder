@@ -7,10 +7,11 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using SnippetBuilderCSharp.IO;
+using SnippetBuilderCSharp.Models;
 
-namespace SnippetBuilderCSharp
+namespace SnippetBuilderCSharp.Snippets
 {
-    public class VisualStudioCodeSnippetsBuilder : SnippetsBuilderBase
+    public class VisualStudioCodeSnippet : SnippetBase
     {
         protected override string Extension { get; } = ".code-snippets";
         private readonly Dictionary<string, Snippet> _dictionary;
@@ -22,7 +23,7 @@ namespace SnippetBuilderCSharp
             [JsonPropertyName("body")] public string[] Body { get; set; } = Array.Empty<string>();
         }
 
-        public VisualStudioCodeSnippetsBuilder(Recipe recipe, IFileStreamBroker fileStreamBroker,
+        public VisualStudioCodeSnippet(Recipe recipe, IFileStreamBroker fileStreamBroker,
             IFileBroker fileBroker) : base(recipe, fileStreamBroker, fileBroker)
         {
             _dictionary = new Dictionary<string, Snippet>();

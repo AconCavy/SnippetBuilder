@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SnippetBuilderCSharp
+namespace SnippetBuilderCSharp.Snippets
 {
-    public interface ISnippetsBuilder
+    public interface ISnippet
     {
         ValueTask BuildAsync(CancellationToken cancellationToken);
         ValueTask<IEnumerable<string>> BuildSnippetsAsync(CancellationToken cancellationToken = default);

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SnippetBuilderCSharp
+namespace SnippetBuilderCSharp.Models
 {
     public class Recipe
     {

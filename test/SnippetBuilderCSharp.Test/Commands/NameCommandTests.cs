@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SnippetBuilderCSharp.Commands;
+using SnippetBuilderCSharp.Models;
 
 namespace SnippetBuilderCSharp.Test.Commands
 {

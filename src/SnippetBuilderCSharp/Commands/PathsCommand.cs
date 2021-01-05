@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using SnippetBuilderCSharp.IO;
+using SnippetBuilderCSharp.Models;
 
 namespace SnippetBuilderCSharp.Commands
 {

@@ -4,10 +4,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SnippetBuilderCSharp.IO;
+using SnippetBuilderCSharp.Models;
 
-namespace SnippetBuilderCSharp
+namespace SnippetBuilderCSharp.Snippets
 {
-    public abstract class SnippetsBuilderBase : ISnippetsBuilder
+    public abstract class SnippetBase : ISnippet
     {
         protected List<string> FilePaths { get; }
         protected abstract string Extension { get; }
@@ -17,7 +18,7 @@ namespace SnippetBuilderCSharp
         private readonly string _outputDirectory;
         private readonly string _outputName;
 
-        protected SnippetsBuilderBase(Recipe recipe, IFileStreamBroker fileStreamBroker, IFileBroker fileBroker)
+        protected SnippetBase(Recipe recipe, IFileStreamBroker fileStreamBroker, IFileBroker fileBroker)
         {
             if (recipe.Name is null) throw new ArgumentNullException(nameof(recipe.Name));
             if (recipe.Output is null) throw new ArgumentNullException(nameof(recipe.Output));

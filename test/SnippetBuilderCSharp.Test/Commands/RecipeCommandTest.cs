@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using SnippetBuilderCSharp.Commands;
 using SnippetBuilderCSharp.IO;
+using SnippetBuilderCSharp.Models;
 
 namespace SnippetBuilderCSharp.Test.Commands
 {

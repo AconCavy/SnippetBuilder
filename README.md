@@ -1,10 +1,10 @@
-# SnippetBuilderCSharp
+# SnippetBuilder
 
 ## Command line with arguments
 
 ```
-dotnet run -p ./src/SnippetBuilderCSharp -- --name hello --paths ./HelloWorld.cs --output ./artifacts
-SnippetBuilderCSharp.exe --name hello --paths ./HelloWorld.cs --output ./artifacts
+dotnet run -p ./src/SnippetBuilder -- --name hello --paths ./HelloWorld.cs --output ./artifacts
+SnippetBuilder.exe --name hello --paths ./HelloWorld.cs --output ./artifacts
 ```
 
 ### Use recipe file
@@ -16,7 +16,10 @@ SnippetBuilderCSharp.exe --name hello --paths ./HelloWorld.cs --output ./artifac
     "paths": [
       "./file1.cs"
     ],
-    "output": "./output/"
+    "output": "./output/",
+    "extensions": [
+      ".cs"
+    ]
   },
   {
     "name": "sample2",
@@ -24,19 +27,22 @@ SnippetBuilderCSharp.exe --name hello --paths ./HelloWorld.cs --output ./artifac
       "./file2.cs",
       "./file3.cs"
     ],
-    "output": "./output/"
+    "output": "./output/",
+    "extensions": [
+      ".cs"
+    ]
   }
 ]
 ```
 
 ```
-dotnet run -p ./src/SnippetBuilderCSharp -- --recipe ./recipe.json
+dotnet run -p ./src/SnippetBuilder -- --recipe ./recipe.json
 ```
 
 ## Interactive
 
 ```sh
-dotnet run -p ./src/SnippetBuilderCSharp
+dotnet run -p ./src/SnippetBuilder
 
 Enter the target file or directory paths
 Enter a blank to go to the next step
@@ -56,12 +62,12 @@ Complete! Look ./artifacts
 cat ./artifacts/hello.code-snippet
 {
   "HelloWorld": {
-    "scope": "csharp",
     "prefix": [
       "helloworld",
       "hw"
     ],
     "body": [
+      "using System;",
       "namespace AwesomeProject",
       "{",
       "    class Program",

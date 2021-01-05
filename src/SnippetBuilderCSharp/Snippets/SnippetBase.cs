@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SnippetBuilderCSharp.Extensions;
 using SnippetBuilderCSharp.IO;
 using SnippetBuilderCSharp.Models;
 
@@ -10,41 +11,35 @@ namespace SnippetBuilderCSharp.Snippets
 {
     public abstract class SnippetBase : ISnippet
     {
-        protected List<string> FilePaths { get; }
         protected abstract string Extension { get; }
-        protected IFileStreamBroker FileStreamBroker { get; }
         protected IFileBroker FileBroker { get; }
+        protected IFileStreamBroker FileStreamBroker { get; }
 
-        private readonly string _outputDirectory;
-        private readonly string _outputName;
-
-        protected SnippetBase(Recipe recipe, IFileStreamBroker fileStreamBroker, IFileBroker fileBroker)
+        protected SnippetBase(IFileBroker fileBroker, IFileStreamBroker fileStreamBroker)
         {
-            if (recipe.Name is null) throw new ArgumentNullException(nameof(recipe.Name));
-            if (recipe.Output is null) throw new ArgumentNullException(nameof(recipe.Output));
-            if (recipe.Paths is null) throw new ArgumentNullException(nameof(recipe.Paths));
-
-            FileStreamBroker = fileStreamBroker;
             FileBroker = fileBroker;
-            _outputName = recipe.Name;
-            FilePaths = new List<string>();
-            foreach (var path in recipe.Paths)
-                if (FileBroker.ExistsFile(path)) FilePaths.Add(path);
-                else if (FileBroker.ExistsDirectory(path)) FilePaths.AddRange(FileBroker.GetFilePaths(path, "*.cs"));
-
-            _outputDirectory = recipe.Output;
-            if (!FileBroker.ExistsDirectory(_outputDirectory)) FileBroker.CreateDirectory(_outputDirectory);
+            FileStreamBroker = fileStreamBroker;
         }
 
-        public async ValueTask BuildAsync(CancellationToken cancellationToken = default)
+        public async ValueTask BuildAsync(Recipe recipe, CancellationToken cancellationToken = default)
         {
-            var outputPath = Path.Combine(_outputDirectory, _outputName + Extension);
-            var snippets = await BuildSnippetsAsync(cancellationToken).ConfigureAwait(false);
-            if (cancellationToken.IsCancellationRequested) return;
-            await FileStreamBroker.WriteLinesAsync(outputPath, snippets, cancellationToken).ConfigureAwait(false);
+            if (!recipe.Validate()) throw new ArgumentException(nameof(recipe));
+
+            var input = new List<string>();
+            foreach (var path in recipe.Paths!)
+                if (FileBroker.ExistsFile(path)) input.Add(path);
+                else if (FileBroker.ExistsDirectory(path)) input.AddRange(FileBroker.GetFilePaths(path, "*.cs"));
+
+            var outputDirectory = recipe.Output!;
+            if (!FileBroker.ExistsDirectory(outputDirectory)) FileBroker.CreateDirectory(outputDirectory);
+
+            var outputFile = Path.Combine(outputDirectory, recipe.Name! + Extension);
+            var snippets = await BuildAsync(input, cancellationToken).ConfigureAwait(false);
+            await FileStreamBroker.WriteLinesAsync(outputFile, snippets, cancellationToken)
+                .ConfigureAwait(false);
         }
 
-        public abstract ValueTask<IEnumerable<string>> BuildSnippetsAsync(
+        public abstract ValueTask<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
             CancellationToken cancellationToken = default);
     }
 }

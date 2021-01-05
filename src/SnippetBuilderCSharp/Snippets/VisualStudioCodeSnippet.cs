@@ -7,44 +7,45 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using SnippetBuilderCSharp.IO;
-using SnippetBuilderCSharp.Models;
 
 namespace SnippetBuilderCSharp.Snippets
 {
     public class VisualStudioCodeSnippet : SnippetBase
     {
         protected override string Extension { get; } = ".code-snippets";
-        private readonly Dictionary<string, Snippet> _dictionary;
+        private readonly Dictionary<string, Section> _sections;
 
-        private class Snippet
+        private class Section
         {
             [JsonPropertyName("scope")] public string Scope { get; set; } = "csharp";
             [JsonPropertyName("prefix")] public string[] Prefix { get; set; } = Array.Empty<string>();
             [JsonPropertyName("body")] public string[] Body { get; set; } = Array.Empty<string>();
         }
 
-        public VisualStudioCodeSnippet(Recipe recipe, IFileStreamBroker fileStreamBroker,
-            IFileBroker fileBroker) : base(recipe, fileStreamBroker, fileBroker)
+        public VisualStudioCodeSnippet(IFileBroker fileBroker, IFileStreamBroker fileStreamBroker)
+            : base(fileBroker, fileStreamBroker)
         {
-            _dictionary = new Dictionary<string, Snippet>();
+            _sections = new Dictionary<string, Section>();
         }
 
-        public override async ValueTask<IEnumerable<string>> BuildSnippetsAsync(
+        public override async ValueTask<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
             CancellationToken cancellationToken = default)
         {
-            foreach (var path in FilePaths)
+            foreach (var path in paths)
             {
-                var (section, snippet) = await CreateSnippetAsync(path, cancellationToken).ConfigureAwait(false);
-                _dictionary[section] = snippet;
+                if (!FileBroker.ExistsFile(path)) continue;
+                var (title, section) = await CreateSectionAsync(path, cancellationToken).ConfigureAwait(false);
+                _sections[title] = section;
                 if (cancellationToken.IsCancellationRequested) break;
             }
 
             var options = new JsonSerializerOptions {WriteIndented = true};
-            var snippets = JsonSerializer.Serialize(_dictionary, options);
+            var snippets = JsonSerializer.Serialize(_sections, options);
             return new[] {snippets};
         }
 
-        private async ValueTask<(string, Snippet)> CreateSnippetAsync(string path, CancellationToken cancellationToken)
+        private async ValueTask<(string, Section)> CreateSectionAsync(string path,
+            CancellationToken cancellationToken)
         {
             var name = Path.GetFileNameWithoutExtension(path);
             var skip = true;
@@ -61,7 +62,7 @@ namespace SnippetBuilderCSharp.Snippets
             var abbreviation = new Regex("[a-z0-9]").Replace(name, "").ToLower();
             if (abbreviation.Length > 1) prefixes.Add(abbreviation);
 
-            return (name, new Snippet {Prefix = prefixes.ToArray(), Body = body.ToArray()});
+            return (name, new Section {Prefix = prefixes.ToArray(), Body = body.ToArray()});
         }
     }
 }

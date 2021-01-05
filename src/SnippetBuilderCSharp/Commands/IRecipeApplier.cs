@@ -1,4 +1,6 @@
-﻿namespace SnippetBuilderCSharp.Commands
+﻿using SnippetBuilderCSharp.Models;
+
+namespace SnippetBuilderCSharp.Commands
 {
     public interface IRecipeApplier
     {

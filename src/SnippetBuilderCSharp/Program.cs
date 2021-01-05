@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using SnippetBuilderCSharp.Commands;
 using SnippetBuilderCSharp.IO;
+using SnippetBuilderCSharp.Models;
+using SnippetBuilderCSharp.Snippets;
 
 namespace SnippetBuilderCSharp
 {
@@ -54,13 +56,14 @@ namespace SnippetBuilderCSharp
                 if (nameCommand.Validate() && outputCommand.Validate() && pathsCommand.Validate()) recipes.Add(recipe);
             }
 
+            var vscode = new VisualStudioCodeSnippet(fileBroker, fileStreamBroker);
+
             foreach (var recipe in recipes)
             {
                 if (recipe.Paths is null || !recipe.Paths.Any()) continue;
                 recipe.Output ??= DefaultOutputDirectory;
                 recipe.Name ??= DefaultOutputName;
-                await new VisualStudioCodeSnippetsBuilder(recipe, fileStreamBroker, fileBroker)
-                    .BuildAsync();
+                await vscode.BuildAsync(recipe);
             }
         }
 
@@ -98,7 +101,7 @@ namespace SnippetBuilderCSharp
             Console.WriteLine();
 
             Console.WriteLine("Building...");
-            await new VisualStudioCodeSnippetsBuilder(recipe, fileStreamBroker, fileBroker).BuildAsync();
+            await new VisualStudioCodeSnippet(fileBroker, fileStreamBroker).BuildAsync(recipe);
 
             Console.WriteLine($"Complete! Look {Path.GetFullPath(recipe.Output)}");
             Close();

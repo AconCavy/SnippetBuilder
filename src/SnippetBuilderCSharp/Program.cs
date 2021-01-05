@@ -32,6 +32,7 @@ namespace SnippetBuilderCSharp
             commandBuilder.RegisterCommand(new PathsCommand(fileBroker));
             commandBuilder.RegisterCommand(new OutputCommand());
             commandBuilder.RegisterCommand(new RecipeCommand(fileStreamBroker, fileBroker));
+            commandBuilder.RegisterCommand(new ExtensionsCommand());
             commandBuilder.Build(args);
 
             var recipes = new List<Recipe>();
@@ -75,19 +76,29 @@ namespace SnippetBuilderCSharp
                 _ = Console.ReadLine();
             }
 
+            static IEnumerable<string> GetInputs()
+            {
+                string? line;
+                while (!string.IsNullOrEmpty(line = Console.ReadLine()))
+                    foreach (var item in line.Split(" "))
+                        yield return item;
+            }
+
             var recipe = new Recipe();
-            var paths = new List<string>();
             Console.WriteLine("Enter the target file or directory paths");
             Console.WriteLine("Enter a blank to go to the next step");
-            string? line;
-            while (!string.IsNullOrEmpty(line = Console.ReadLine()))
-                paths.AddRange(line.Split(" "));
-
-            recipe.Paths = paths.Where(x => File.Exists(x) || Directory.Exists(x)).ToArray();
-            if (recipe.Paths.Any())
+            recipe.Paths = GetInputs().Where(x => fileBroker.ExistsFile(x) || fileBroker.ExistsDirectory(x)).ToArray();
+            if (!recipe.Paths.Any())
             {
                 Console.WriteLine("No valid file or directory paths");
                 Close();
+                return;
+            }
+
+            if (recipe.Paths.Any(fileBroker.ExistsDirectory))
+            {
+                Console.WriteLine("Enter the target file extensions");
+                recipe.Extensions = GetInputs().ToArray();
             }
 
             Console.WriteLine($"Enter the output directory (default is {DefaultOutputDirectory})");

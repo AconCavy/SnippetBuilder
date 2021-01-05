@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SnippetBuilderCSharp.Extensions;
@@ -27,8 +28,19 @@ namespace SnippetBuilderCSharp.Snippets
 
             var input = new List<string>();
             foreach (var path in recipe.Paths!)
-                if (FileBroker.ExistsFile(path)) input.Add(path);
-                else if (FileBroker.ExistsDirectory(path)) input.AddRange(FileBroker.GetFilePaths(path, "*.cs"));
+                if (FileBroker.ExistsFile(path))
+                {
+                    input.Add(path);
+                }
+                else if (FileBroker.ExistsDirectory(path))
+                {
+                    if (recipe.Extensions is null || !recipe.Extensions.Any())
+                        input.AddRange(FileBroker.GetFilePaths(path, $"*"));
+                    else
+                        foreach (var extension in recipe.Extensions!)
+                            input.AddRange(FileBroker.GetFilePaths(path, $"*{extension}"));
+                }
+
 
             var outputDirectory = recipe.Output!;
             if (!FileBroker.ExistsDirectory(outputDirectory)) FileBroker.CreateDirectory(outputDirectory);

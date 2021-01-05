@@ -17,7 +17,6 @@ namespace SnippetBuilderCSharp.Snippets
 
         private class Section
         {
-            [JsonPropertyName("scope")] public string Scope { get; set; } = "csharp";
             [JsonPropertyName("prefix")] public string[] Prefix { get; set; } = Array.Empty<string>();
             [JsonPropertyName("body")] public string[] Body { get; set; } = Array.Empty<string>();
         }
@@ -48,13 +47,10 @@ namespace SnippetBuilderCSharp.Snippets
             CancellationToken cancellationToken)
         {
             var name = Path.GetFileNameWithoutExtension(path);
-            var skip = true;
             var body = new List<string>();
             await foreach (var line in FileStreamBroker.ReadLinesAsync(path).WithCancellation(cancellationToken))
             {
                 if (string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) continue;
-                if (skip && line.Contains("using")) continue;
-                skip = false;
                 body.Add(line);
             }
 

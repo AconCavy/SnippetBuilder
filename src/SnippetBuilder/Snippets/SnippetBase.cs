@@ -4,23 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SnippetBuilder.Extensions;
 using SnippetBuilder.IO;
 using SnippetBuilder.Models;
-using SnippetBuilder.Extensions;
 
 namespace SnippetBuilder.Snippets
 {
     public abstract class SnippetBase : ISnippet
     {
-        protected abstract string Extension { get; }
-        protected IFileBroker FileBroker { get; }
-        protected IFileStreamBroker FileStreamBroker { get; }
-
         protected SnippetBase(IFileBroker fileBroker, IFileStreamBroker fileStreamBroker)
         {
             FileBroker = fileBroker;
             FileStreamBroker = fileStreamBroker;
         }
+
+        protected abstract string Extension { get; }
+        protected IFileBroker FileBroker { get; }
+        protected IFileStreamBroker FileStreamBroker { get; }
 
         public async ValueTask BuildAsync(Recipe recipe, CancellationToken cancellationToken = default)
         {
@@ -35,7 +35,7 @@ namespace SnippetBuilder.Snippets
                 else if (FileBroker.ExistsDirectory(path))
                 {
                     if (recipe.Extensions is null || !recipe.Extensions.Any())
-                        input.AddRange(FileBroker.GetFilePaths(path, $"*"));
+                        input.AddRange(FileBroker.GetFilePaths(path, "*"));
                     else
                         foreach (var extension in recipe.Extensions!)
                             input.AddRange(FileBroker.GetFilePaths(path, $"*{extension}"));

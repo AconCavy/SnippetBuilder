@@ -25,13 +25,7 @@ namespace SnippetBuilder.Test.Snippets
         {
             var recipe = new Recipe
             {
-                Name = "HelloSample",
-                Output = "./output",
-                Paths = new[]
-                {
-                    "HelloSample.cs",
-                    "directory"
-                }
+                Name = "HelloSample", Output = "./output", Paths = new[] {"HelloSample.cs", "directory"}
             };
             var fakeFileBroker = new FakeFileBroker();
             var fakeFileStreamBroker = new FakeFileStreamBroker();

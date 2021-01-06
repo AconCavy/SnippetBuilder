@@ -9,12 +9,7 @@ namespace SnippetBuilder.Test.Fakes
     {
         private readonly string[] _data =
         {
-            "using System;",
-            "",
-            "public string Greet(string name)",
-            "{",
-            "    return $\"Hello {name}\"",
-            "}"
+            "using System;", "", "public string Greet(string name)", "{", "    return $\"Hello {name}\"", "}"
         };
 
         public async IAsyncEnumerable<string> ReadLinesAsync(string path)
@@ -23,9 +18,7 @@ namespace SnippetBuilder.Test.Fakes
         }
 
         public async ValueTask<bool> WriteLinesAsync(string path, IEnumerable<string> data,
-            CancellationToken cancellationToken = default)
-        {
-            return await Task.FromResult(true).ConfigureAwait(false);
-        }
+            CancellationToken cancellationToken = default) =>
+            await Task.FromResult(true).ConfigureAwait(false);
     }
 }

@@ -8,10 +8,7 @@ namespace SnippetBuilder.Commands
     {
         private readonly List<ICommand> _commands;
 
-        public CommandProvider()
-        {
-            _commands = new List<ICommand>();
-        }
+        public CommandProvider() => _commands = new List<ICommand>();
 
         public void Build(string[]? args)
         {
@@ -34,20 +31,11 @@ namespace SnippetBuilder.Commands
             }
         }
 
-        public void RegisterCommand<T>(T command) where T : ICommand
-        {
-            _commands.Add(command);
-        }
+        public void RegisterCommand<T>(T command) where T : ICommand => _commands.Add(command);
 
-        public T ResolveCommand<T>() where T : ICommand
-        {
-            return _commands.OfType<T>().First();
-        }
+        public T ResolveCommand<T>() where T : ICommand => _commands.OfType<T>().First();
 
-        public IEnumerable<T> ResolveCommands<T>() where T : ICommand
-        {
-            return _commands.OfType<T>();
-        }
+        public IEnumerable<T> ResolveCommands<T>() where T : ICommand => _commands.OfType<T>();
 
         public bool TryResolveCommand<T>(out T result) where T : ICommand
         {

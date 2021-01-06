@@ -12,20 +12,13 @@ namespace SnippetBuilder.Snippets
 {
     public class VisualStudioCodeSnippet : SnippetBase
     {
-        protected override string Extension { get; } = ".code-snippets";
         private readonly Dictionary<string, Section> _sections;
 
-        private class Section
-        {
-            [JsonPropertyName("prefix")] public string[] Prefix { get; set; } = Array.Empty<string>();
-            [JsonPropertyName("body")] public string[] Body { get; set; } = Array.Empty<string>();
-        }
-
         public VisualStudioCodeSnippet(IFileBroker fileBroker, IFileStreamBroker fileStreamBroker)
-            : base(fileBroker, fileStreamBroker)
-        {
+            : base(fileBroker, fileStreamBroker) =>
             _sections = new Dictionary<string, Section>();
-        }
+
+        protected override string Extension { get; } = ".code-snippets";
 
         public override async ValueTask<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
             CancellationToken cancellationToken = default)
@@ -59,6 +52,12 @@ namespace SnippetBuilder.Snippets
             if (abbreviation.Length > 1) prefixes.Add(abbreviation);
 
             return (name, new Section {Prefix = prefixes.ToArray(), Body = body.ToArray()});
+        }
+
+        private class Section
+        {
+            [JsonPropertyName("prefix")] public string[] Prefix { get; set; } = Array.Empty<string>();
+            [JsonPropertyName("body")] public string[] Body { get; set; } = Array.Empty<string>();
         }
     }
 }

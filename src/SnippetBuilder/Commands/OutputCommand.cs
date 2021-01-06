@@ -6,14 +6,8 @@ namespace SnippetBuilder.Commands
     [Command(LongName = "output", ShortName = "o", Description = "Output directory")]
     public class OutputCommand : CommandBase, IRecipeApplier
     {
-        public override bool Validate()
-        {
-            return Params.Any();
-        }
+        public void ApplyTo(Recipe recipe) => recipe.Output = Parameter;
 
-        public void ApplyTo(Recipe recipe)
-        {
-            recipe.Output = Parameter;
-        }
+        public override bool Validate() => Params.Any();
     }
 }

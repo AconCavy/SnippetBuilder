@@ -67,22 +67,13 @@ namespace SnippetBuilder.Test.Snippets
                 await sut.BuildAsync(new Recipe {Name = recipe.Name, Output = recipe.Output}));
         }
 
-        private static Recipe CreateRecipe()
-        {
-            return new Recipe
+        private static Recipe CreateRecipe() =>
+            new Recipe
             {
                 Name = "HelloSample",
                 Output = "./output",
-                Paths = new[]
-                {
-                    "HelloSample.cs",
-                    "directory"
-                },
-                Extensions = new[]
-                {
-                    ".cs"
-                }
+                Paths = new[] {"HelloSample.cs", "directory"},
+                Extensions = new[] {".cs"}
             };
-        }
     }
 }

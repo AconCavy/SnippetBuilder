@@ -6,20 +6,11 @@ namespace SnippetBuilder.Test.Fakes
 {
     public class FakeFileBroker : IFileBroker
     {
-        public bool ExistsFile(string path)
-        {
-            return path.EndsWith(".cs");
-        }
+        public bool ExistsFile(string path) => path.EndsWith(".cs");
 
-        public bool ExistsDirectory(string path)
-        {
-            return !path.EndsWith(".*");
-        }
+        public bool ExistsDirectory(string path) => !path.EndsWith(".*");
 
-        public IEnumerable<string> GetFilePaths(string path, string searchPattern)
-        {
-            return Array.Empty<string>();
-        }
+        public IEnumerable<string> GetFilePaths(string path, string searchPattern) => Array.Empty<string>();
 
         public void CreateDirectory(string path)
         {

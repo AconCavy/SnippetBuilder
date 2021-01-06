@@ -110,10 +110,7 @@ namespace SnippetBuilder.Test.Commands
         {
             var options = new[]
             {
-                "-n sample",
-                "-o ./sample",
-                "-p file1.cs directory/file2.cs directory/file3.cs",
-                "-r recipe.json"
+                "-n sample", "-o ./sample", "-p file1.cs directory/file2.cs directory/file3.cs", "-r recipe.json"
             };
 
             for (var i = 0; i < 1 << options.Length; i++)
@@ -127,10 +124,8 @@ namespace SnippetBuilder.Test.Commands
                 sut.Build(args.ToArray());
                 var commands = new ICommand[]
                 {
-                    sut.ResolveCommand<NameCommand>(),
-                    sut.ResolveCommand<OutputCommand>(),
-                    sut.ResolveCommand<PathsCommand>(),
-                    sut.ResolveCommand<RecipeCommand>()
+                    sut.ResolveCommand<NameCommand>(), sut.ResolveCommand<OutputCommand>(),
+                    sut.ResolveCommand<PathsCommand>(), sut.ResolveCommand<RecipeCommand>()
                 };
                 for (var j = 0; j < options.Length; j++)
                 {

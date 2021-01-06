@@ -48,12 +48,7 @@ namespace SnippetBuilder.Test.Commands
             {
                 Name = "sample",
                 Output = "./sample",
-                Paths = new[]
-                {
-                    "file1.cs",
-                    "directory/file2.cs",
-                    "directory/file3.cs"
-                }
+                Paths = new[] {"file1.cs", "directory/file2.cs", "directory/file3.cs"}
             };
 
 

@@ -11,8 +11,8 @@ namespace SnippetBuilder.Commands
     public class RecipeCommand : CommandBase
     {
         private readonly string[] _ext = {".json"};
-        private readonly IFileStreamBroker _fileStreamBroker;
         private readonly IFileBroker _fileBroker;
+        private readonly IFileStreamBroker _fileStreamBroker;
 
         public RecipeCommand(IFileStreamBroker fileStreamBroker, IFileBroker fileBroker)
         {
@@ -20,10 +20,9 @@ namespace SnippetBuilder.Commands
             _fileBroker = fileBroker;
         }
 
-        public override bool Validate()
-        {
-            return Params.Any() && Params.All(x => _fileBroker.ExistsFile(x) && _ext.Contains(Path.GetExtension(x)));
-        }
+        public override bool Validate() => Params.Any() &&
+                                           Params.All(x =>
+                                               _fileBroker.ExistsFile(x) && _ext.Contains(Path.GetExtension(x)));
 
         public async IAsyncEnumerable<Recipe> GetRecipesAsync()
         {

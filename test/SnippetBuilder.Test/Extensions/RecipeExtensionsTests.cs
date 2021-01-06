@@ -46,18 +46,7 @@ namespace SnippetBuilder.Test.Extensions
             Assert.That(sut.Validate(), Is.False);
         }
 
-        private static Recipe CreateRecipe()
-        {
-            return new Recipe
-            {
-                Name = "HelloSample",
-                Output = "./output",
-                Paths = new[]
-                {
-                    "HelloSample.cs",
-                    "directory"
-                }
-            };
-        }
+        private static Recipe CreateRecipe() =>
+            new Recipe {Name = "HelloSample", Output = "./output", Paths = new[] {"HelloSample.cs", "directory"}};
     }
 }

@@ -12,27 +12,27 @@ namespace SnippetBuilder.Snippets
 {
     public class VisualStudioCodeSnippet : SnippetBase
     {
-        private readonly Dictionary<string, Section> _sections;
-
-        public VisualStudioCodeSnippet(IFileBroker fileBroker, IFileStreamBroker fileStreamBroker)
-            : base(fileBroker, fileStreamBroker) =>
-            _sections = new Dictionary<string, Section>();
+        public VisualStudioCodeSnippet(IFileBroker fileBroker, IFileStreamBroker fileStreamBroker) : base(fileBroker,
+            fileStreamBroker)
+        {
+        }
 
         protected override string Extension { get; } = ".code-snippets";
 
         public override async ValueTask<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
             CancellationToken cancellationToken = default)
         {
+            var sections = new Dictionary<string, Section>();
             foreach (var path in paths)
             {
                 if (!FileBroker.ExistsFile(path)) continue;
                 var (title, section) = await CreateSectionAsync(path, cancellationToken).ConfigureAwait(false);
-                _sections[title] = section;
+                sections[title] = section;
                 if (cancellationToken.IsCancellationRequested) break;
             }
 
             var options = new JsonSerializerOptions {WriteIndented = true};
-            var snippets = JsonSerializer.Serialize(_sections, options);
+            var snippets = JsonSerializer.Serialize(sections, options);
             return new[] {snippets};
         }
 

@@ -3,8 +3,7 @@
 ## Command line with arguments
 
 ```
-dotnet run -p ./src/SnippetBuilder -- --name hello --paths ./HelloWorld.cs --output ./artifacts
-SnippetBuilder.exe --name hello --paths ./HelloWorld.cs --output ./artifacts
+dotnet run -p ./src/SnippetBuilder -- --name hello --input ./HelloWorld.cs --extensions .cs --output ./artifacts
 ```
 
 ### Use recipe file
@@ -36,7 +35,7 @@ SnippetBuilder.exe --name hello --paths ./HelloWorld.cs --output ./artifacts
 ```
 
 ```
-dotnet run -p ./src/SnippetBuilder -- --recipe ./recipe.json
+dotnet run -p ./src/SnippetBuilder -- --recipes ./recipe.json
 ```
 
 ## Interactive
@@ -48,6 +47,9 @@ Enter the target file or directory paths
 Enter a blank to go to the next step
 ./HelloWorld.cs
 
+Enter a target file extensions
+.cs
+
 Enter the output directory (default is ./SnippetBuilderArtifacts/)
 ./artifacts
 
@@ -55,7 +57,7 @@ Enter the output file name (no ext.) (default is snippets)
 hello
 
 Building...
-Complete! Look ./artifacts
+Complete!
 ```
 
 ```sh

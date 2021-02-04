@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SnippetBuilder.IO
 {
-    public class FileStreamBroker : IFileStreamBroker
+    internal class FileStreamBroker : IFileStreamBroker
     {
         public async IAsyncEnumerable<string> ReadLinesAsync(string path)
         {

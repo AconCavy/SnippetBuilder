@@ -7,7 +7,7 @@ using SnippetBuilder.Models;
 
 namespace SnippetBuilder.IO
 {
-    public class RecipeSerializer : IRecipeSerializer
+    internal class RecipeSerializer : IRecipeSerializer
     {
         private readonly string[] _ext = {".json"};
 

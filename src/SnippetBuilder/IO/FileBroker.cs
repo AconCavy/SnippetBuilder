@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SnippetBuilder.IO
 {
-    public class FileBroker : IFileBroker
+    internal class FileBroker : IFileBroker
     {
         public bool ExistsFile(string path) => File.Exists(path);
 

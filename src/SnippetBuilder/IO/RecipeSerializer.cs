@@ -1,33 +1,41 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using SnippetBuilder.IO;
 using SnippetBuilder.Models;
 
-namespace SnippetBuilder.Commands
+namespace SnippetBuilder.IO
 {
-    [Command(LongName = "recipe", ShortName = "r", Description = "Recipe file path (json)")]
-    public class RecipeCommand : CommandBase
+    internal class RecipeSerializer : IRecipeSerializer
     {
         private readonly string[] _ext = {".json"};
+
         private readonly IFileBroker _fileBroker;
         private readonly IFileStreamBroker _fileStreamBroker;
 
-        public RecipeCommand(IFileStreamBroker fileStreamBroker, IFileBroker fileBroker)
+        public RecipeSerializer(IFileStreamBroker fileStreamBroker, IFileBroker fileBroker)
         {
             _fileStreamBroker = fileStreamBroker;
             _fileBroker = fileBroker;
         }
 
-        public override bool Validate() => Params.Any() &&
-                                           Params.All(x =>
-                                               _fileBroker.ExistsFile(x) && _ext.Contains(Path.GetExtension(x)));
-
-        public async IAsyncEnumerable<Recipe> GetRecipesAsync()
+        public async IAsyncEnumerable<Recipe> DeserializeAsync(IEnumerable<string> paths)
         {
-            foreach (var path in Params)
+            foreach (var path in paths)
             {
+                if (!_fileBroker.ExistsFile(path) && !_fileBroker.ExistsDirectory(path))
+                {
+                    Console.WriteLine($"Skip ({path}), path does not exist.");
+                    continue;
+                }
+
+                if (!_ext.Contains(Path.GetExtension(path)))
+                {
+                    Console.WriteLine($"Skip ({path}), path is invalid.");
+                    continue;
+                }
+
                 var lines = new List<string>();
                 await foreach (var line in _fileStreamBroker.ReadLinesAsync(path)) lines.Add(line);
 

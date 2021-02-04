@@ -7,9 +7,9 @@ namespace SnippetBuilder.Snippets
 {
     public interface ISnippet
     {
-        ValueTask BuildAsync(Recipe recipe, CancellationToken cancellationToken = default);
+        Task BuildAsync(Recipe recipe, CancellationToken cancellationToken = default);
 
-        ValueTask<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
+        Task<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
             CancellationToken cancellationToken = default);
     }
 }

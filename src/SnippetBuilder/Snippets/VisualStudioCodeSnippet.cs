@@ -19,7 +19,7 @@ namespace SnippetBuilder.Snippets
 
         protected override string Extension { get; } = ".code-snippets";
 
-        public override async ValueTask<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
+        public override async Task<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
             CancellationToken cancellationToken = default)
         {
             var sections = new Dictionary<string, Section>();

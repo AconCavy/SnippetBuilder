@@ -22,7 +22,7 @@ namespace SnippetBuilder.Snippets
         protected IFileBroker FileBroker { get; }
         protected IFileStreamBroker FileStreamBroker { get; }
 
-        public async ValueTask BuildAsync(Recipe recipe, CancellationToken cancellationToken = default)
+        public async Task BuildAsync(Recipe recipe, CancellationToken cancellationToken = default)
         {
             if (!recipe.Validate()) throw new ArgumentException(nameof(recipe));
 
@@ -40,7 +40,10 @@ namespace SnippetBuilder.Snippets
                         foreach (var extension in recipe.Extensions!)
                             input.AddRange(FileBroker.GetFilePaths(path, $"*{extension}"));
                 }
-
+                else
+                {
+                    Console.WriteLine($"Skip ({path}), path does not exist.");
+                }
 
             var outputDirectory = recipe.Output!;
             if (!FileBroker.ExistsDirectory(outputDirectory)) FileBroker.CreateDirectory(outputDirectory);
@@ -51,7 +54,7 @@ namespace SnippetBuilder.Snippets
                 .ConfigureAwait(false);
         }
 
-        public abstract ValueTask<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
+        public abstract Task<IEnumerable<string>> BuildAsync(IEnumerable<string> paths,
             CancellationToken cancellationToken = default);
     }
 }

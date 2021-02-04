@@ -44,11 +44,10 @@ namespace SnippetBuilder
 
         private async Task RunAsync(string[]? input, string output, string name, string[] extensions, string[]? recipes)
         {
-            var targets = new List<Recipe>
-            {
-                input is null ? CreateRecipe() : CreateRecipe(input, output, name, extensions)
-            };
+            var targets = new List<Recipe>();
 
+            if (input is null && recipes is null) targets.Add(CreateRecipe());
+            if (input is { }) targets.Add(CreateRecipe(input, output, name, extensions));
             if (recipes is { }) targets.AddRange(await CreateRecipesAsync(recipes));
 
             Console.WriteLine("Building...");

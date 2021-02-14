@@ -18,7 +18,7 @@ namespace SnippetBuilder.Test
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
 
-            var sut = new Runner(new[] {mockSnippet.Object}, mockRecipeSerializer.Object);
+            var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
             const string line = "--input ./sample.cs";
             var args = line.Split(" ");
@@ -33,9 +33,9 @@ namespace SnippetBuilder.Test
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
-                .Returns(ToAsyncEnumerable(new[] {new Recipe {Paths = new[] {"sample.cs"}}}));
+                .Returns(ToAsyncEnumerable(new[] { new Recipe { Paths = new[] { "sample.cs" } } }));
 
-            var sut = new Runner(new[] {mockSnippet.Object}, mockRecipeSerializer.Object);
+            var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
             const string line = "--recipes sample.json";
             var args = line.Split(" ");
@@ -48,13 +48,16 @@ namespace SnippetBuilder.Test
         [Test]
         public void RunAsyncWithDuplicatedNameTest()
         {
-            var recipes = new[] {new Recipe {Paths = new[] {"sample1.cs"}}, new Recipe {Paths = new[] {"sample2.cs"}}};
+            var recipes = new[]
+            {
+                new Recipe { Paths = new[] { "sample1.cs" } }, new Recipe { Paths = new[] { "sample2.cs" } }
+            };
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
                 .Returns(ToAsyncEnumerable(recipes));
 
-            var sut = new Runner(new[] {mockSnippet.Object}, mockRecipeSerializer.Object);
+            var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
             const string line = "--recipes sample1.json sample2.json";
             var args = line.Split(" ");
@@ -70,9 +73,9 @@ namespace SnippetBuilder.Test
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
-                .Returns(ToAsyncEnumerable(new[] {new Recipe {Paths = new[] {"sample.cs"}}}));
+                .Returns(ToAsyncEnumerable(new[] { new Recipe { Paths = new[] { "sample.cs" } } }));
 
-            var sut = new Runner(new[] {mockSnippet.Object}, mockRecipeSerializer.Object);
+            var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
             const string line = "--input ./sample.cs --recipes sample.json";
             var args = line.Split(" ");
@@ -88,7 +91,7 @@ namespace SnippetBuilder.Test
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
 
-            var sut = new Runner(new[] {mockSnippet.Object}, mockRecipeSerializer.Object);
+            var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
             var args = Array.Empty<string>();
             const string input = @"./sample1.cs ./sample2.cs
@@ -108,14 +111,17 @@ namespace SnippetBuilder.Test
         [Test]
         public void RunAsyncWithMultipleSnippetTest()
         {
-            var recipes = new[] {new Recipe {Paths = new[] {"sample1.cs"}}, new Recipe {Paths = new[] {"sample2.cs"}}};
+            var recipes = new[]
+            {
+                new Recipe { Paths = new[] { "sample1.cs" } }, new Recipe { Paths = new[] { "sample2.cs" } }
+            };
             var mockSnippet1 = new Mock<ISnippet>();
             var mockSnippet2 = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
                 .Returns(ToAsyncEnumerable(recipes));
 
-            var sut = new Runner(new[] {mockSnippet1.Object, mockSnippet2.Object}, mockRecipeSerializer.Object);
+            var sut = new Runner(new[] { mockSnippet1.Object, mockSnippet2.Object }, mockRecipeSerializer.Object);
 
             const string line = "--recipes sample1.json sample2.json";
             var args = line.Split(" ");
@@ -130,7 +136,7 @@ namespace SnippetBuilder.Test
         {
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
-            var sut = new Runner(new[] {mockSnippet.Object}, mockRecipeSerializer.Object);
+            var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
             const string line = "--foo bar";
             var args = line.Split(" ");

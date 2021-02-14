@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -31,9 +31,9 @@ namespace SnippetBuilder.Snippets
                 if (cancellationToken.IsCancellationRequested) break;
             }
 
-            var options = new JsonSerializerOptions {WriteIndented = true};
+            var options = new JsonSerializerOptions { WriteIndented = true };
             var snippets = JsonSerializer.Serialize(sections, options);
-            return new[] {snippets};
+            return new[] { snippets };
         }
 
         private async ValueTask<(string, Section)> CreateSectionAsync(string path,
@@ -47,11 +47,11 @@ namespace SnippetBuilder.Snippets
                 body.Add(line);
             }
 
-            var prefixes = new List<string> {name.ToLower()};
+            var prefixes = new List<string> { name.ToLower() };
             var abbreviation = new Regex("[a-z0-9]").Replace(name, "").ToLower();
             if (abbreviation.Length > 1) prefixes.Add(abbreviation);
 
-            return (name, new Section {Prefix = prefixes.ToArray(), Body = body.ToArray()});
+            return (name, new Section { Prefix = prefixes.ToArray(), Body = body.ToArray() });
         }
 
         private class Section

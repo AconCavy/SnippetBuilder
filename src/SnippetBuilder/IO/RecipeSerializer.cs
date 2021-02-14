@@ -9,7 +9,7 @@ namespace SnippetBuilder.IO
 {
     internal class RecipeSerializer : IRecipeSerializer
     {
-        private readonly string[] _ext = {".json"};
+        private readonly string[] _ext = { ".json" };
 
         private readonly IFileBroker _fileBroker;
         private readonly IFileStreamBroker _fileStreamBroker;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Moq;
 using NUnit.Framework;
 using SnippetBuilder.IO;
@@ -60,11 +60,11 @@ namespace SnippetBuilder.Test.Snippets
             SnippetBase sut = new VisualStudioCodeSnippet(mockFileBroker, mockFileStreamBroker);
 
             Assert.ThrowsAsync<ArgumentException>(async () =>
-                await sut.BuildAsync(new Recipe {Output = recipe.Output, Paths = recipe.Paths}));
+                await sut.BuildAsync(new Recipe { Output = recipe.Output, Paths = recipe.Paths }));
             Assert.ThrowsAsync<ArgumentException>(async () =>
-                await sut.BuildAsync(new Recipe {Name = recipe.Name, Paths = recipe.Paths}));
+                await sut.BuildAsync(new Recipe { Name = recipe.Name, Paths = recipe.Paths }));
             Assert.ThrowsAsync<ArgumentException>(async () =>
-                await sut.BuildAsync(new Recipe {Name = recipe.Name, Output = recipe.Output}));
+                await sut.BuildAsync(new Recipe { Name = recipe.Name, Output = recipe.Output }));
         }
 
         private static Recipe CreateRecipe() =>
@@ -72,8 +72,8 @@ namespace SnippetBuilder.Test.Snippets
             {
                 Name = "HelloSample",
                 Output = "./output",
-                Paths = new[] {"HelloSample.cs", "directory"},
-                Extensions = new[] {".cs"}
+                Paths = new[] { "HelloSample.cs", "directory" },
+                Extensions = new[] { ".cs" }
             };
     }
 }

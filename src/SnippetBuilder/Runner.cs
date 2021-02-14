@@ -57,7 +57,7 @@ namespace SnippetBuilder
 
         private Recipe CreateRecipe(string[] input, string output, string name, string[] extensions)
         {
-            var recipe = new Recipe {Paths = input, Name = name, Output = output, Extensions = extensions};
+            var recipe = new Recipe { Paths = input, Name = name, Output = output, Extensions = extensions };
             var count = IncrementCount(recipe.Name);
             if (count > 1) recipe.Name += $"_{count - 1}";
             return recipe;
@@ -126,8 +126,8 @@ namespace SnippetBuilder
             var recipeArray = recipes.ToArray();
             var tasks = new List<Task>();
             foreach (var snippet in snippetArray)
-            foreach (var recipe in recipeArray)
-                tasks.Add(snippet.BuildAsync(recipe));
+                foreach (var recipe in recipeArray)
+                    tasks.Add(snippet.BuildAsync(recipe));
 
             return Task.WhenAll(tasks);
         }

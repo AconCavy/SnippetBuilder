@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,7 +21,7 @@ namespace SnippetBuilder
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureServices(((_, services) =>
+                .ConfigureServices((_, services) =>
                 {
                     services.AddScoped<IFileBroker, FileBroker>();
                     services.AddScoped<IFileStreamBroker, FileStreamBroker>();
@@ -29,6 +29,6 @@ namespace SnippetBuilder
                     services.AddScoped<IRecipeSerializer, RecipeSerializer>();
 
                     services.AddSingleton<Runner>();
-                }));
+                });
     }
 }

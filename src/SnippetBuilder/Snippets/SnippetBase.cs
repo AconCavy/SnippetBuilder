@@ -26,19 +26,19 @@ namespace SnippetBuilder.Snippets
         {
             if (!recipe.Validate()) throw new ArgumentException(nameof(recipe));
 
-            var input = new List<string>();
-            foreach (var path in recipe.Paths!)
+            var paths = new List<string>();
+            foreach (var path in recipe.Input!)
                 if (FileBroker.ExistsFile(path))
                 {
-                    input.Add(path);
+                    paths.Add(path);
                 }
                 else if (FileBroker.ExistsDirectory(path))
                 {
                     if (recipe.Extensions is null || !recipe.Extensions.Any())
-                        input.AddRange(FileBroker.GetFilePaths(path, "*"));
+                        paths.AddRange(FileBroker.GetFilePaths(path, "*"));
                     else
                         foreach (var extension in recipe.Extensions!)
-                            input.AddRange(FileBroker.GetFilePaths(path, $"*{extension}"));
+                            paths.AddRange(FileBroker.GetFilePaths(path, $"*{extension}"));
                 }
                 else
                 {
@@ -49,7 +49,7 @@ namespace SnippetBuilder.Snippets
             if (!FileBroker.ExistsDirectory(outputDirectory)) FileBroker.CreateDirectory(outputDirectory);
 
             var outputFile = Path.Combine(outputDirectory, recipe.Name! + Extension);
-            var snippets = await BuildAsync(input, cancellationToken).ConfigureAwait(false);
+            var snippets = await BuildAsync(paths, cancellationToken).ConfigureAwait(false);
             await FileStreamBroker.WriteLinesAsync(outputFile, snippets, cancellationToken)
                 .ConfigureAwait(false);
         }

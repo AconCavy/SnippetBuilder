@@ -60,9 +60,9 @@ namespace SnippetBuilder.Test.Snippets
             SnippetBase sut = new VisualStudioCodeSnippet(mockFileBroker, mockFileStreamBroker);
 
             Assert.ThrowsAsync<ArgumentException>(async () =>
-                await sut.BuildAsync(new Recipe { Output = recipe.Output, Paths = recipe.Paths }));
+                await sut.BuildAsync(new Recipe { Output = recipe.Output, Input = recipe.Input }));
             Assert.ThrowsAsync<ArgumentException>(async () =>
-                await sut.BuildAsync(new Recipe { Name = recipe.Name, Paths = recipe.Paths }));
+                await sut.BuildAsync(new Recipe { Name = recipe.Name, Input = recipe.Input }));
             Assert.ThrowsAsync<ArgumentException>(async () =>
                 await sut.BuildAsync(new Recipe { Name = recipe.Name, Output = recipe.Output }));
         }
@@ -72,7 +72,7 @@ namespace SnippetBuilder.Test.Snippets
             {
                 Name = "HelloSample",
                 Output = "./output",
-                Paths = new[] { "HelloSample.cs", "directory" },
+                Input = new[] { "HelloSample.cs", "directory" },
                 Extensions = new[] { ".cs" }
             };
     }

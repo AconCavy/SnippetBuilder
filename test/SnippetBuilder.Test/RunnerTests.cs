@@ -33,7 +33,7 @@ namespace SnippetBuilder.Test
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
-                .Returns(ToAsyncEnumerable(new[] { new Recipe { Paths = new[] { "sample.cs" } } }));
+                .Returns(ToAsyncEnumerable(new[] { new Recipe { Input = new[] { "sample.cs" } } }));
 
             var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
@@ -50,7 +50,7 @@ namespace SnippetBuilder.Test
         {
             var recipes = new[]
             {
-                new Recipe { Paths = new[] { "sample1.cs" } }, new Recipe { Paths = new[] { "sample2.cs" } }
+                new Recipe { Input = new[] { "sample1.cs" } }, new Recipe { Input = new[] { "sample2.cs" } }
             };
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
@@ -73,7 +73,7 @@ namespace SnippetBuilder.Test
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
-                .Returns(ToAsyncEnumerable(new[] { new Recipe { Paths = new[] { "sample.cs" } } }));
+                .Returns(ToAsyncEnumerable(new[] { new Recipe { Input = new[] { "sample.cs" } } }));
 
             var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
@@ -113,7 +113,7 @@ namespace SnippetBuilder.Test
         {
             var recipes = new[]
             {
-                new Recipe { Paths = new[] { "sample1.cs" } }, new Recipe { Paths = new[] { "sample2.cs" } }
+                new Recipe { Input = new[] { "sample1.cs" } }, new Recipe { Input = new[] { "sample2.cs" } }
             };
             var mockSnippet1 = new Mock<ISnippet>();
             var mockSnippet2 = new Mock<ISnippet>();

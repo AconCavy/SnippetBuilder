@@ -9,8 +9,7 @@ namespace SnippetBuilder.Extensions
         {
             if (string.IsNullOrEmpty(recipe.Name)) return false;
             if (string.IsNullOrEmpty(recipe.Output)) return false;
-            if (recipe.Paths is null || recipe.Paths.Any(string.IsNullOrEmpty)) return false;
-            return true;
+            return recipe.Input is { } && !recipe.Input.Any(string.IsNullOrEmpty);
         }
     }
 }

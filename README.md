@@ -12,7 +12,7 @@ dotnet run -p ./src/SnippetBuilder -- --name hello --input ./HelloWorld.cs --ext
 [
   {
     "name": "sample1",
-    "paths": [
+    "input": [
       "./file1.cs"
     ],
     "output": "./output/",
@@ -22,7 +22,7 @@ dotnet run -p ./src/SnippetBuilder -- --name hello --input ./HelloWorld.cs --ext
   },
   {
     "name": "sample2",
-    "paths": [
+    "input": [
       "./file2.cs",
       "./file3.cs"
     ],

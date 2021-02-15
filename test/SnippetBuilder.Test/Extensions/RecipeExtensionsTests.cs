@@ -17,10 +17,10 @@ namespace SnippetBuilder.Test.Extensions
         public void ValidationIsFalseByNameTest()
         {
             var baseRecipe = CreateRecipe();
-            var sut = new Recipe { Output = baseRecipe.Output, Paths = baseRecipe.Paths };
+            var sut = new Recipe { Output = baseRecipe.Output, Input = baseRecipe.Input };
             Assert.That(sut.Validate(), Is.False);
 
-            sut = new Recipe { Name = string.Empty, Output = baseRecipe.Output, Paths = baseRecipe.Paths };
+            sut = new Recipe { Name = string.Empty, Output = baseRecipe.Output, Input = baseRecipe.Input };
             Assert.That(sut.Validate(), Is.False);
         }
 
@@ -28,10 +28,10 @@ namespace SnippetBuilder.Test.Extensions
         public void ValidationIsFalseByOutputTest()
         {
             var baseRecipe = CreateRecipe();
-            var sut = new Recipe { Name = baseRecipe.Name, Paths = baseRecipe.Paths };
+            var sut = new Recipe { Name = baseRecipe.Name, Input = baseRecipe.Input };
             Assert.That(sut.Validate(), Is.False);
 
-            sut = new Recipe { Name = baseRecipe.Name, Output = string.Empty, Paths = baseRecipe.Paths };
+            sut = new Recipe { Name = baseRecipe.Name, Output = string.Empty, Input = baseRecipe.Input };
             Assert.That(sut.Validate(), Is.False);
         }
 
@@ -42,11 +42,11 @@ namespace SnippetBuilder.Test.Extensions
             var sut = new Recipe { Name = baseRecipe.Name, Output = baseRecipe.Output };
             Assert.That(sut.Validate(), Is.False);
 
-            sut = new Recipe { Name = baseRecipe.Name, Output = baseRecipe.Output, Paths = new[] { string.Empty } };
+            sut = new Recipe { Name = baseRecipe.Name, Output = baseRecipe.Output, Input = new[] { string.Empty } };
             Assert.That(sut.Validate(), Is.False);
         }
 
         private static Recipe CreateRecipe() =>
-            new Recipe { Name = "HelloSample", Output = "./output", Paths = new[] { "HelloSample.cs", "directory" } };
+            new Recipe { Name = "HelloSample", Output = "./output", Input = new[] { "HelloSample.cs", "directory" } };
     }
 }

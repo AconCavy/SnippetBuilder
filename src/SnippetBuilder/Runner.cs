@@ -28,14 +28,18 @@ namespace SnippetBuilder
 
         public Task<int> RunAsync(string[] args)
         {
-            var command = new RootCommand
-            {
-                new Option<string[]?>("--input", "Input file or directory paths"),
-                new Option<string>("--output", () => DefaultOutputDirectory, "Output directory path"),
-                new Option<string>("--name", () => DefaultOutputName, "Output file name"),
-                new Option<string[]>("--extensions", Array.Empty<string>, "Include file extensions"),
-                new Option<string[]>("--recipes", "Recipe file paths")
-            };
+            var inputOption = new Option<string[]?>("--input", "Input file or directory paths");
+            inputOption.AddAlias("-i");
+            var outputOption = new Option<string>("--output", () => DefaultOutputDirectory, "Output directory path");
+            outputOption.AddAlias("-o");
+            var nameOption = new Option<string>("--name", () => DefaultOutputName, "Output file name");
+            nameOption.AddAlias("-n");
+            var extensionsOption = new Option<string[]>("--extensions", Array.Empty<string>, "Include file extensions");
+            extensionsOption.AddAlias("-ext");
+            var recipesOption = new Option<string[]>("--recipes", "Recipe file paths");
+            recipesOption.AddAlias("-r");
+
+            var command = new RootCommand { inputOption, outputOption, nameOption, extensionsOption, recipesOption };
             command.Description = "SnippetBuilder is an editor snippet building tool.";
             command.Handler = CommandHandler.Create<string[]?, string, string, string[], string[]?>(RunAsync);
 
@@ -127,7 +131,7 @@ namespace SnippetBuilder
             var tasks = new List<Task>();
             foreach (var snippet in snippetArray)
                 foreach (var recipe in recipeArray)
-                    tasks.Add(snippet.BuildAsync(recipe));
+                    tasks.Add(Task.Run(() => snippet.BuildAsync(recipe)));
 
             return Task.WhenAll(tasks);
         }

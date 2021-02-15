@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SnippetBuilder.IO;
+using SnippetBuilder.Test.Utilities;
 
 namespace SnippetBuilder.Test.Fakes
 {
@@ -12,10 +13,7 @@ namespace SnippetBuilder.Test.Fakes
             "using System;", "", "public string Greet(string name)", "{", "    return $\"Hello {name}\"", "}"
         };
 
-        public async IAsyncEnumerable<string> ReadLinesAsync(string path)
-        {
-            foreach (var line in _data) yield return line;
-        }
+        public IAsyncEnumerable<string> ReadLinesAsync(string path) => _data.ToAsyncEnumerable();
 
         public async ValueTask<bool> WriteLinesAsync(string path, IEnumerable<string> data,
             CancellationToken cancellationToken = default) =>

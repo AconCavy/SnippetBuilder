@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SnippetBuilder.IO;
 using SnippetBuilder.Models;
 using SnippetBuilder.Snippets;
+using SnippetBuilder.Test.Utilities;
 
 namespace SnippetBuilder.Test
 {
@@ -33,7 +35,7 @@ namespace SnippetBuilder.Test
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
-                .Returns(ToAsyncEnumerable(new[] { new Recipe { Input = new[] { "sample.cs" } } }));
+                .Returns((new[] { new Recipe { Input = new[] { "sample.cs" } } }).ToAsyncEnumerable);
 
             var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
@@ -55,7 +57,7 @@ namespace SnippetBuilder.Test
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
-                .Returns(ToAsyncEnumerable(recipes));
+                .Returns(recipes.ToAsyncEnumerable());
 
             var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
@@ -73,7 +75,7 @@ namespace SnippetBuilder.Test
             var mockSnippet = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
-                .Returns(ToAsyncEnumerable(new[] { new Recipe { Input = new[] { "sample.cs" } } }));
+                .Returns((new[] { new Recipe { Input = new[] { "sample.cs" } } }).ToAsyncEnumerable);
 
             var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
@@ -119,7 +121,7 @@ namespace SnippetBuilder.Test
             var mockSnippet2 = new Mock<ISnippet>();
             var mockRecipeSerializer = new Mock<IRecipeSerializer>();
             mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
-                .Returns(ToAsyncEnumerable(recipes));
+                .Returns(recipes.ToAsyncEnumerable());
 
             var sut = new Runner(new[] { mockSnippet1.Object, mockSnippet2.Object }, mockRecipeSerializer.Object);
 
@@ -143,11 +145,6 @@ namespace SnippetBuilder.Test
 
             Assert.DoesNotThrowAsync(() => sut.RunAsync(args));
             mockSnippet.Verify(x => x.BuildAsync(It.IsAny<Recipe>(), It.IsAny<CancellationToken>()), Times.Never);
-        }
-
-        private static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(IEnumerable<T> source)
-        {
-            foreach (var item in source) yield return item;
         }
     }
 }

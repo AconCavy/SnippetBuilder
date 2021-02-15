@@ -27,14 +27,14 @@ namespace SnippetBuilder.Test.Snippets
             {
                 Name = "HelloSample",
                 Output = "./output",
-                Paths = new[] { "HelloSample.cs", "directory" }
+                Input = new[] { "HelloSample.cs", "directory" }
             };
             var fakeFileBroker = new FakeFileBroker();
             var fakeFileStreamBroker = new FakeFileStreamBroker();
 
             var sut = new VisualStudioCodeSnippet(fakeFileBroker, fakeFileStreamBroker);
 
-            var actual = (await sut.BuildAsync(recipe.Paths!)).First();
+            var actual = (await sut.BuildAsync(recipe.Input!)).First();
             const string expected = @"{
   ""HelloSample"": {
     ""prefix"": [

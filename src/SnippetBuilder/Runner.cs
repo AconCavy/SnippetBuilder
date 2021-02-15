@@ -61,7 +61,7 @@ namespace SnippetBuilder
 
         private Recipe CreateRecipe(string[] input, string output, string name, string[] extensions)
         {
-            var recipe = new Recipe { Paths = input, Name = name, Output = output, Extensions = extensions };
+            var recipe = new Recipe { Input = input, Name = name, Output = output, Extensions = extensions };
             var count = IncrementCount(recipe.Name);
             if (count > 1) recipe.Name += $"_{count - 1}";
             return recipe;
@@ -88,9 +88,9 @@ namespace SnippetBuilder
             {
                 Console.WriteLine("Enter a target file or directory paths");
                 Console.WriteLine("Enter a blank to go to the next step");
-                recipe.Paths = GetInputs().ToArray();
+                recipe.Input = GetInputs().ToArray();
                 Console.WriteLine();
-            } while (!recipe.Paths.Any());
+            } while (!recipe.Input.Any());
 
             Console.WriteLine("Enter a target file extensions");
             recipe.Extensions = GetInputs().ToArray();

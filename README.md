@@ -1,9 +1,17 @@
 # SnippetBuilder
 
+## Requirement
+
+- .NET Core 3.1.x
+
+### Application runtimes
+
+The released applications are framework-dependent on .NET Core 3.1, targeting Windows x64, Linux x64, and macOS x64.
+
 ## Command line with arguments
 
-```
-dotnet run -p ./src/SnippetBuilder -- --name hello --input ./HelloWorld.cs --extensions .cs --output ./artifacts
+```sh
+./SnippetBuilder --name hello --input ./HelloWorld.cs --extensions .cs --output ./artifacts
 ```
 
 ### Use recipe file
@@ -34,14 +42,14 @@ dotnet run -p ./src/SnippetBuilder -- --name hello --input ./HelloWorld.cs --ext
 ]
 ```
 
-```
-dotnet run -p ./src/SnippetBuilder -- --recipes ./recipe.json
+```sh
+./SnippetBuilder --recipes ./recipe.json
 ```
 
 ## Interactive
 
 ```sh
-dotnet run -p ./src/SnippetBuilder
+./SnippetBuilder
 
 Enter the target file or directory paths
 Enter a blank to go to the next step

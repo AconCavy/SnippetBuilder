@@ -5,6 +5,10 @@ on:
     tags: 
     - 'v[0-9]+.[0-9]+.[0-9]+*'
 
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   test:
 
@@ -32,11 +36,9 @@ jobs:
         dotnet-version: 3.1.x
 
     - name: Build
-      shell: pwsh
-      run: ./Publish.ps1 ./publish
+      run: Import-Module ./release.ps1 && Build-Release -Path ./src/SnippetBuilder
 
     - name: Create Release
-      shell: pwsh
-      run: ./Create-Release.ps1 ./publish $env:GITHUB_REF.Split("/")[-1]
+      run: Import-Module ./release.ps1 && Publish-Release -Tag $env:GITHUB_REF.Split("/")[-1]
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

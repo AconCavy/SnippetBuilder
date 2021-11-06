@@ -17,7 +17,7 @@ public class VisualStudioCodeSnippetTests
         var mockFileProvider = new Mock<IFileProvider>().Object;
         var mockFileStreamProvider = new Mock<IFileStreamProvider>().Object;
 
-        Assert.DoesNotThrow(() => _ = new VisualStudioCodeSnippet((IFileStreamProvider)mockFileProvider, (IFileProvider)mockFileStreamProvider));
+        Assert.DoesNotThrow(() => _ = new VisualStudioCodeSnippet(mockFileStreamProvider, mockFileProvider));
     }
 
     [Test]
@@ -32,7 +32,7 @@ public class VisualStudioCodeSnippetTests
         var fakeFileProvider = new FakeFileProvider();
         var fakeFileStreamProvider = new FakeFileStreamProvider();
 
-        var sut = new VisualStudioCodeSnippet((IFileStreamProvider)fakeFileProvider, (IFileProvider)fakeFileStreamProvider);
+        var sut = new VisualStudioCodeSnippet(fakeFileStreamProvider, fakeFileProvider);
 
         var actual = (await sut.BuildAsync(recipe.Input!)).First();
         const string expected = @"{

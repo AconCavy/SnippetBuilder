@@ -12,10 +12,10 @@ namespace SnippetBuilder.Snippets;
 
 public abstract class SnippetBase : ISnippet
 {
-    protected SnippetBase(IFileProvider fileProvider, IFileStreamProvider fileStreamProvider)
+    protected SnippetBase(IFileStreamProvider fileStreamProvider, IFileProvider fileProvider)
     {
-        FileProvider = fileProvider;
         FileStreamProvider = fileStreamProvider;
+        FileProvider = fileProvider;
     }
 
     protected abstract string Extension { get; }

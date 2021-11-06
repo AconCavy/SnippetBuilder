@@ -12,8 +12,8 @@ namespace SnippetBuilder.Snippets;
 
 public class VisualStudioCodeSnippet : SnippetBase
 {
-    public VisualStudioCodeSnippet(IFileProvider fileProvider, IFileStreamProvider fileStreamProvider) : base(fileProvider,
-        fileStreamProvider)
+    public VisualStudioCodeSnippet(IFileStreamProvider fileStreamProvider, IFileProvider fileProvider)
+        : base(fileStreamProvider, fileProvider)
     {
     }
 

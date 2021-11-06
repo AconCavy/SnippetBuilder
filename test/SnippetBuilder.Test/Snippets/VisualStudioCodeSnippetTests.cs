@@ -7,35 +7,35 @@ using SnippetBuilder.Models;
 using SnippetBuilder.Snippets;
 using SnippetBuilder.Test.Fakes;
 
-namespace SnippetBuilder.Test.Snippets
+namespace SnippetBuilder.Test.Snippets;
+
+public class VisualStudioCodeSnippetTests
 {
-    public class VisualStudioCodeSnippetTests
+    [Test]
+    public void InitializeTest()
     {
-        [Test]
-        public void InitializeTest()
+        var mockFileBroker = new Mock<IFileBroker>().Object;
+        var mockFileStreamBroker = new Mock<IFileStreamBroker>().Object;
+
+        Assert.DoesNotThrow(() => _ = new VisualStudioCodeSnippet(mockFileBroker, mockFileStreamBroker));
+    }
+
+    [Test]
+    public async Task BuildAsyncByPathsTest()
+    {
+        var recipe = new Recipe
         {
-            var mockFileBroker = new Mock<IFileBroker>().Object;
-            var mockFileStreamBroker = new Mock<IFileStreamBroker>().Object;
+            Name = "HelloSample",
+            Output = "./output",
+            Input = new[] { "HelloSample.cs", "directory" }
+        };
+        var fakeFileBroker = new FakeFileBroker();
+        var fakeFileStreamBroker = new FakeFileStreamBroker();
 
-            Assert.DoesNotThrow(() => _ = new VisualStudioCodeSnippet(mockFileBroker, mockFileStreamBroker));
-        }
+        var sut = new VisualStudioCodeSnippet(fakeFileBroker, fakeFileStreamBroker);
 
-        [Test]
-        public async Task BuildAsyncByPathsTest()
-        {
-            var recipe = new Recipe
-            {
-                Name = "HelloSample",
-                Output = "./output",
-                Input = new[] { "HelloSample.cs", "directory" }
-            };
-            var fakeFileBroker = new FakeFileBroker();
-            var fakeFileStreamBroker = new FakeFileStreamBroker();
-
-            var sut = new VisualStudioCodeSnippet(fakeFileBroker, fakeFileStreamBroker);
-
-            var actual = (await sut.BuildAsync(recipe.Input!)).First();
-            const string expected = @"{
+        var actual = (await sut.BuildAsync(recipe.Input!)).First();
+        const string expected = @"{
   ""HelloSample"": {
     ""prefix"": [
       ""hellosample"",
@@ -50,7 +50,6 @@ namespace SnippetBuilder.Test.Snippets
     ]
   }
 }";
-            Assert.That(actual, Is.EqualTo(expected));
-        }
+        Assert.That(actual, Is.EqualTo(expected));
     }
 }

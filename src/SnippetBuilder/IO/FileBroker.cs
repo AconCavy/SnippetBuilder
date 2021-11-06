@@ -5,12 +5,23 @@ namespace SnippetBuilder.IO;
 
 internal class FileBroker : IFileBroker
 {
-    public bool ExistsFile(string path) => File.Exists(path);
+    public bool ExistsFile(string path)
+    {
+        return File.Exists(path);
+    }
 
-    public bool ExistsDirectory(string path) => Directory.Exists(path);
+    public bool ExistsDirectory(string path)
+    {
+        return Directory.Exists(path);
+    }
 
-    public IEnumerable<string> GetFilePaths(string path, string searchPattern) =>
-        Directory.GetFiles(path, searchPattern);
+    public IEnumerable<string> GetFilePaths(string path, string searchPattern)
+    {
+        return Directory.GetFiles(path, searchPattern);
+    }
 
-    public void CreateDirectory(string path) => Directory.CreateDirectory(path);
+    public void CreateDirectory(string path)
+    {
+        Directory.CreateDirectory(path);
+    }
 }

@@ -28,6 +28,7 @@ public abstract class SnippetBase : ISnippet
 
         var paths = new List<string>();
         foreach (var path in recipe.Input!)
+        {
             if (FileBroker.ExistsFile(path))
             {
                 paths.Add(path);
@@ -35,15 +36,22 @@ public abstract class SnippetBase : ISnippet
             else if (FileBroker.ExistsDirectory(path))
             {
                 if (recipe.Extensions is null || !recipe.Extensions.Any())
+                {
                     paths.AddRange(FileBroker.GetFilePaths(path, "*"));
+                }
                 else
+                {
                     foreach (var extension in recipe.Extensions!)
+                    {
                         paths.AddRange(FileBroker.GetFilePaths(path, $"*{extension}"));
+                    }
+                }
             }
             else
             {
                 Console.WriteLine($"Skip ({path}), path does not exist.");
             }
+        }
 
         var outputDirectory = recipe.Output!;
         if (!FileBroker.ExistsDirectory(outputDirectory)) FileBroker.CreateDirectory(outputDirectory);

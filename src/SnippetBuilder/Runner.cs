@@ -78,16 +78,19 @@ public class Runner
     {
         static string? GetInput()
         {
-            var line = Console.ReadLine();
-            return line?.Trim();
+            return Console.ReadLine()?.Trim();
         }
 
         static IEnumerable<string> GetInputs()
         {
             string? line;
             while (!string.IsNullOrEmpty(line = Console.ReadLine()))
+            {
                 foreach (var item in line.Split(" "))
+                {
                     yield return item;
+                }
+            }
         }
 
         var recipe = new Recipe();
@@ -137,8 +140,12 @@ public class Runner
         var recipeArray = recipes.ToArray();
         var tasks = new List<Task>();
         foreach (var snippet in snippetArray)
+        {
             foreach (var recipe in recipeArray)
+            {
                 tasks.Add(Task.Run(() => snippet.BuildAsync(recipe)));
+            }
+        }
 
         return Task.WhenAll(tasks);
     }

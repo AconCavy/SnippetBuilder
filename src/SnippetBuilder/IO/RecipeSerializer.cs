@@ -37,12 +37,18 @@ internal class RecipeSerializer : IRecipeSerializer
             }
 
             var lines = new List<string>();
-            await foreach (var line in _fileStreamBroker.ReadLinesAsync(path)) lines.Add(line);
+            await foreach (var line in _fileStreamBroker.ReadLinesAsync(path))
+            {
+                lines.Add(line);
+            }
 
             var json = string.Join("\n", lines);
             var recipes = JsonSerializer.Deserialize<Recipe[]>(json);
             if (recipes is null) continue;
-            foreach (var recipe in recipes) yield return recipe;
+            foreach (var recipe in recipes)
+            {
+                yield return recipe;
+            }
         }
     }
 }

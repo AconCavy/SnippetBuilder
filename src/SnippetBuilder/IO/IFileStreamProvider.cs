@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SnippetBuilder.IO;
 
-public interface IFileStreamBroker
+public interface IFileStreamProvider
 {
     IAsyncEnumerable<string> ReadLinesAsync(string path);
 

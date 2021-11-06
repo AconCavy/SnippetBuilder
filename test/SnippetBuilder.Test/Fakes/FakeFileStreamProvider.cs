@@ -6,7 +6,7 @@ using SnippetBuilder.Test.Utilities;
 
 namespace SnippetBuilder.Test.Fakes;
 
-public class FakeFileStreamBroker : IFileStreamBroker
+public class FakeFileStreamProvider : IFileStreamProvider
 {
     private readonly string[] _data =
     {

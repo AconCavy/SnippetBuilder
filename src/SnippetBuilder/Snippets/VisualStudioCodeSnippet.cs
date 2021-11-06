@@ -12,8 +12,8 @@ namespace SnippetBuilder.Snippets;
 
 public class VisualStudioCodeSnippet : SnippetBase
 {
-    public VisualStudioCodeSnippet(IFileBroker fileBroker, IFileStreamBroker fileStreamBroker) : base(fileBroker,
-        fileStreamBroker)
+    public VisualStudioCodeSnippet(IFileProvider fileProvider, IFileStreamProvider fileStreamProvider) : base(fileProvider,
+        fileStreamProvider)
     {
     }
 
@@ -25,7 +25,7 @@ public class VisualStudioCodeSnippet : SnippetBase
         var sections = new Dictionary<string, Section>();
         foreach (var path in paths)
         {
-            if (!FileBroker.ExistsFile(path)) continue;
+            if (!FileProvider.ExistsFile(path)) continue;
             var (title, section) = await CreateSectionAsync(path, cancellationToken).ConfigureAwait(false);
             sections[title] = section;
             if (cancellationToken.IsCancellationRequested) break;
@@ -41,7 +41,7 @@ public class VisualStudioCodeSnippet : SnippetBase
     {
         var name = Path.GetFileNameWithoutExtension(path);
         var body = new List<string>();
-        await foreach (var line in FileStreamBroker.ReadLinesAsync(path).WithCancellation(cancellationToken))
+        await foreach (var line in FileStreamProvider.ReadLinesAsync(path).WithCancellation(cancellationToken))
         {
             if (string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) continue;
             body.Add(line);

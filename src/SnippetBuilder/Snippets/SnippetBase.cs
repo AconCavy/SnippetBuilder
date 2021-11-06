@@ -12,15 +12,15 @@ namespace SnippetBuilder.Snippets;
 
 public abstract class SnippetBase : ISnippet
 {
-    protected SnippetBase(IFileBroker fileBroker, IFileStreamBroker fileStreamBroker)
+    protected SnippetBase(IFileProvider fileProvider, IFileStreamProvider fileStreamProvider)
     {
-        FileBroker = fileBroker;
-        FileStreamBroker = fileStreamBroker;
+        FileProvider = fileProvider;
+        FileStreamProvider = fileStreamProvider;
     }
 
     protected abstract string Extension { get; }
-    protected IFileBroker FileBroker { get; }
-    protected IFileStreamBroker FileStreamBroker { get; }
+    protected IFileProvider FileProvider { get; }
+    protected IFileStreamProvider FileStreamProvider { get; }
 
     public async Task BuildAsync(Recipe recipe, CancellationToken cancellationToken = default)
     {
@@ -29,21 +29,21 @@ public abstract class SnippetBase : ISnippet
         var paths = new List<string>();
         foreach (var path in recipe.Input!)
         {
-            if (FileBroker.ExistsFile(path))
+            if (FileProvider.ExistsFile(path))
             {
                 paths.Add(path);
             }
-            else if (FileBroker.ExistsDirectory(path))
+            else if (FileProvider.ExistsDirectory(path))
             {
                 if (recipe.Extensions is null || !recipe.Extensions.Any())
                 {
-                    paths.AddRange(FileBroker.GetFilePaths(path, "*"));
+                    paths.AddRange(FileProvider.GetFilePaths(path, "*"));
                 }
                 else
                 {
                     foreach (var extension in recipe.Extensions!)
                     {
-                        paths.AddRange(FileBroker.GetFilePaths(path, $"*{extension}"));
+                        paths.AddRange(FileProvider.GetFilePaths(path, $"*{extension}"));
                     }
                 }
             }
@@ -54,11 +54,11 @@ public abstract class SnippetBase : ISnippet
         }
 
         var outputDirectory = recipe.Output!;
-        if (!FileBroker.ExistsDirectory(outputDirectory)) FileBroker.CreateDirectory(outputDirectory);
+        if (!FileProvider.ExistsDirectory(outputDirectory)) FileProvider.CreateDirectory(outputDirectory);
 
         var outputFile = Path.Combine(outputDirectory, recipe.Name! + Extension);
         var snippets = await BuildAsync(paths, cancellationToken).ConfigureAwait(false);
-        await FileStreamBroker.WriteLinesAsync(outputFile, snippets, cancellationToken)
+        await FileStreamProvider.WriteLinesAsync(outputFile, snippets, cancellationToken)
             .ConfigureAwait(false);
     }
 

@@ -4,7 +4,7 @@ using SnippetBuilder.IO;
 
 namespace SnippetBuilder.Test.Fakes;
 
-public class FakeFileBroker : IFileBroker
+public class FakeFileProvider : IFileProvider
 {
     public bool ExistsFile(string path) => path.EndsWith(".cs");
 

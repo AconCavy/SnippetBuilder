@@ -14,15 +14,15 @@ public class SnippetBaseTests
     public void BuildAsyncWithCreateDirectoryTest()
     {
         var recipe = CreateRecipe();
-        var mockFileBroker = new Mock<IFileBroker>();
-        var fakeFileStreamBroker = new FakeFileStreamBroker();
-        mockFileBroker.Setup(x => x.ExistsFile(It.IsAny<string>())).Returns(true);
-        mockFileBroker.Setup(x => x.ExistsDirectory(It.IsAny<string>())).Returns(false);
+        var mockFileProvider = new Mock<IFileProvider>();
+        var fakeFileStreamProvider = new FakeFileStreamProvider();
+        mockFileProvider.Setup(x => x.ExistsFile(It.IsAny<string>())).Returns(true);
+        mockFileProvider.Setup(x => x.ExistsDirectory(It.IsAny<string>())).Returns(false);
 
-        SnippetBase sut = new VisualStudioCodeSnippet(mockFileBroker.Object, fakeFileStreamBroker);
+        SnippetBase sut = new VisualStudioCodeSnippet((IFileStreamProvider)mockFileProvider.Object, (IFileProvider)fakeFileStreamProvider);
 
         Assert.DoesNotThrow(() => sut.BuildAsync(recipe));
-        mockFileBroker.Verify(x => x.CreateDirectory(It.IsAny<string>()), Times.Once);
+        mockFileProvider.Verify(x => x.CreateDirectory(It.IsAny<string>()), Times.Once);
     }
 
     [Test]
@@ -30,10 +30,10 @@ public class SnippetBaseTests
     {
         var recipe = CreateRecipe();
         recipe.Extensions = null;
-        var fakeFileBroker = new FakeFileBroker();
-        var fakeFileStreamBroker = new FakeFileStreamBroker();
+        var fakeFileProvider = new FakeFileProvider();
+        var fakeFileStreamProvider = new FakeFileStreamProvider();
 
-        SnippetBase sut = new VisualStudioCodeSnippet(fakeFileBroker, fakeFileStreamBroker);
+        SnippetBase sut = new VisualStudioCodeSnippet((IFileStreamProvider)fakeFileProvider, (IFileProvider)fakeFileStreamProvider);
         Assert.DoesNotThrowAsync(async () => await sut.BuildAsync(recipe));
     }
 
@@ -41,12 +41,12 @@ public class SnippetBaseTests
     public void BuildAsyncByExtensionsTest()
     {
         var recipe = CreateRecipe();
-        var mockFileBroker = new Mock<IFileBroker>();
-        var fakeFileStreamBroker = new FakeFileStreamBroker();
-        mockFileBroker.Setup(x => x.ExistsFile(It.IsAny<string>())).Returns(false);
-        mockFileBroker.Setup(x => x.ExistsDirectory(It.IsAny<string>())).Returns(true);
+        var mockFileProvider = new Mock<IFileProvider>();
+        var fakeFileStreamProvider = new FakeFileStreamProvider();
+        mockFileProvider.Setup(x => x.ExistsFile(It.IsAny<string>())).Returns(false);
+        mockFileProvider.Setup(x => x.ExistsDirectory(It.IsAny<string>())).Returns(true);
 
-        SnippetBase sut = new VisualStudioCodeSnippet(mockFileBroker.Object, fakeFileStreamBroker);
+        SnippetBase sut = new VisualStudioCodeSnippet((IFileStreamProvider)mockFileProvider.Object, (IFileProvider)fakeFileStreamProvider);
 
         Assert.DoesNotThrow(() => sut.BuildAsync(recipe));
     }
@@ -55,9 +55,9 @@ public class SnippetBaseTests
     public void BuildAsyncThrowsExceptionTest()
     {
         var recipe = CreateRecipe();
-        var mockFileBroker = new Mock<IFileBroker>().Object;
-        var mockFileStreamBroker = new Mock<IFileStreamBroker>().Object;
-        SnippetBase sut = new VisualStudioCodeSnippet(mockFileBroker, mockFileStreamBroker);
+        var mockFileProvider = new Mock<IFileProvider>().Object;
+        var mockFileStreamProvider = new Mock<IFileStreamProvider>().Object;
+        SnippetBase sut = new VisualStudioCodeSnippet((IFileStreamProvider)mockFileProvider, (IFileProvider)mockFileStreamProvider);
 
         Assert.ThrowsAsync<ArgumentException>(async () =>
             await sut.BuildAsync(new Recipe { Output = recipe.Output, Input = recipe.Input }));

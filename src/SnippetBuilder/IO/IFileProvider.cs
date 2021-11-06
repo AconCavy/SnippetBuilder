@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SnippetBuilder.IO;
 
-public interface IFileBroker
+public interface IFileProvider
 {
     bool ExistsFile(string path);
     bool ExistsDirectory(string path);

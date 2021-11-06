@@ -23,8 +23,8 @@ public static class Program
         Host.CreateDefaultBuilder(args)
             .ConfigureServices((_, services) =>
             {
-                services.AddScoped<IFileBroker, FileBroker>();
-                services.AddScoped<IFileStreamBroker, FileStreamBroker>();
+                services.AddScoped<IFileProvider, FileProvider>();
+                services.AddScoped<IFileStreamProvider, FileStreamProvider>();
                 services.AddScoped<ISnippet, VisualStudioCodeSnippet>();
                 services.AddScoped<IRecipeSerializer, RecipeSerializer>();
 

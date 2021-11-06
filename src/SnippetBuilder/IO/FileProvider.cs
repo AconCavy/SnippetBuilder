@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SnippetBuilder.IO;
 
-internal class FileBroker : IFileBroker
+internal class FileProvider : IFileProvider
 {
     public bool ExistsFile(string path)
     {

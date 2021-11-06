@@ -16,10 +16,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core 3.1
+    - name: Setup .NET 6
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.x
+        dotnet-version: 6.0.x
+        include-prerelease: true
     - name: Test
       run: dotnet test -c Release --verbosity normal
   
@@ -30,10 +31,11 @@ jobs:
     steps:
     
     - uses: actions/checkout@v2
-    - name: Setup .NET Core 3.1
+    - name: Setup .NET 6
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.x
+        dotnet-version: 6.0.x
+        include-prerelease: true
 
     - name: Build
       run: Import-Module ./release.ps1 && Build-Release -Path ./src/SnippetBuilder

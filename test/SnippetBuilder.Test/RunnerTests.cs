@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SnippetBuilder.IO;
@@ -19,6 +18,8 @@ public class RunnerTests
     {
         var mockSnippet = new Mock<ISnippet>();
         var mockRecipeSerializer = new Mock<IRecipeSerializer>();
+        mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
+            .Returns(Array.Empty<Recipe>().ToAsyncEnumerable);
 
         var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 
@@ -92,6 +93,8 @@ public class RunnerTests
     {
         var mockSnippet = new Mock<ISnippet>();
         var mockRecipeSerializer = new Mock<IRecipeSerializer>();
+        mockRecipeSerializer.Setup(x => x.DeserializeAsync(It.IsAny<string[]>()))
+            .Returns(Array.Empty<Recipe>().ToAsyncEnumerable);
 
         var sut = new Runner(new[] { mockSnippet.Object }, mockRecipeSerializer.Object);
 

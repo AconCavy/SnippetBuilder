@@ -28,15 +28,15 @@ public class Runner
 
     public Task<int> RunAsync(string[] args)
     {
-        var inputOption = new Option<string[]?>("--input", "Input file or directory paths");
+        var inputOption = new Option<string[]>("--input", Array.Empty<string>, "Input file or directory paths");
         inputOption.AddAlias("-i");
-        var outputOption = new Option<string>("--output", () => DefaultOutputDirectory, "Output directory path");
+        var outputOption = new Option<string>("--output", static () => DefaultOutputDirectory, "Output directory path");
         outputOption.AddAlias("-o");
-        var nameOption = new Option<string>("--name", () => DefaultOutputName, "Output file name");
+        var nameOption = new Option<string>("--name", static () => DefaultOutputName, "Output file name");
         nameOption.AddAlias("-n");
         var extensionsOption = new Option<string[]>("--extensions", Array.Empty<string>, "Include file extensions");
         extensionsOption.AddAlias("-ext");
-        var recipesOption = new Option<string[]>("--recipes", "Recipe file paths");
+        var recipesOption = new Option<string[]>("--recipes", Array.Empty<string>, "Recipe file paths");
         recipesOption.AddAlias("-r");
 
         var command = new RootCommand
@@ -48,21 +48,28 @@ public class Runner
             recipesOption
         };
         command.Description = "SnippetBuilder is an editor snippet building tool.";
-        command.Handler = CommandHandler.Create<string[]?, string, string, string[], string[]?>(RunAsync);
+        command.Handler = CommandHandler.Create<string[], string, string, string[], string[]>(RunAsync);
 
         return command.InvokeAsync(args);
     }
 
-    private async Task RunAsync(string[]? input, string output, string name, string[] extensions, string[]? recipes)
+    private async Task RunAsync(string[] input, string output, string name, string[] extensions, string[] recipes)
     {
         var targets = new List<Recipe>();
 
-        if (input is null && recipes is null) targets.Add(CreateRecipe());
-        if (input is { }) targets.Add(CreateRecipe(input, output, name, extensions));
-        if (recipes is { }) targets.AddRange(await CreateRecipesAsync(recipes));
+        if (input.Length == 0 && recipes.Length == 0)
+        {
+            targets.Add(CreateRecipe());
+        }
+        else if (input.Length > 0)
+        {
+            targets.Add(CreateRecipe(input, output, name, extensions));
+        }
+
+        targets.AddRange(await CreateRecipesAsync(recipes));
 
         Console.WriteLine("Building...");
-        await BuildSnippetsAsync(_snippets, targets).ConfigureAwait(false);
+        await BuildSnippetsAsync(targets).ConfigureAwait(false);
         Console.WriteLine("Complete!");
     }
 
@@ -134,16 +141,14 @@ public class Runner
         return recipes;
     }
 
-    private static Task BuildSnippetsAsync(IEnumerable<ISnippet> snippets, IEnumerable<Recipe> recipes)
+    private Task BuildSnippetsAsync(IEnumerable<Recipe> recipes)
     {
-        var snippetArray = snippets.ToArray();
-        var recipeArray = recipes.ToArray();
         var tasks = new List<Task>();
-        foreach (var snippet in snippetArray)
+        foreach (var recipe in recipes)
         {
-            foreach (var recipe in recipeArray)
+            foreach (var snippet in _snippets)
             {
-                tasks.Add(Task.Run(() => snippet.BuildAsync(recipe)));
+                tasks.Add(snippet.BuildAsync(recipe));
             }
         }
 

@@ -1,4 +1,3 @@
-using System.Linq;
 using SnippetBuilder.Models;
 
 namespace SnippetBuilder.Extensions;

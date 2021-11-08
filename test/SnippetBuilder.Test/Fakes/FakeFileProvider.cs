@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using SnippetBuilder.IO;
 
 namespace SnippetBuilder.Test.Fakes;

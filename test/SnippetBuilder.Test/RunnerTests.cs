@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
 using Moq;
 using NUnit.Framework;
 using SnippetBuilder.IO;

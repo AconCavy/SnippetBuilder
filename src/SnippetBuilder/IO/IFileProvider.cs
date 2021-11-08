@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace SnippetBuilder.IO;
 
 public interface IFileProvider

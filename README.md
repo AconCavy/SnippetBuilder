@@ -2,11 +2,11 @@
 
 ## Requirement
 
-- .NET Core 3.1.x
+- .NET 6.0
 
 ### Application runtimes
 
-The released applications are framework-dependent on .NET Core 3.1, targeting Windows x64, Linux x64, and macOS x64.
+The released applications are framework-dependent on .NET 6.0, targeting Windows x64, Linux x64, and macOS x64.
 
 ## Command line with arguments
 

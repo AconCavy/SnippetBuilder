@@ -11,7 +11,9 @@ public static class Program
     {
         args ??= Array.Empty<string>();
         var configuration = CreateHostBuilder(args).Build();
-        var runner = configuration.Services.GetService<Runner>();
+        using var scope = configuration.Services.CreateScope();
+        var provider = scope.ServiceProvider;
+        var runner = provider.GetRequiredService<Runner>();
         if (runner is null) throw new InvalidOperationException(nameof(runner));
 
         return await runner.RunAsync(args);
@@ -21,11 +23,10 @@ public static class Program
         Host.CreateDefaultBuilder(args)
             .ConfigureServices((_, services) =>
             {
-                services.AddScoped<IFileProvider, FileProvider>();
-                services.AddScoped<IFileStreamProvider, FileStreamProvider>();
-                services.AddScoped<ISnippet, VisualStudioCodeSnippet>();
-                services.AddScoped<IRecipeSerializer, RecipeSerializer>();
-
-                services.AddSingleton<Runner>();
+                services.AddScoped<IFileProvider, FileProvider>()
+                    .AddScoped<IFileStreamProvider, FileStreamProvider>()
+                    .AddScoped<ISnippet, VisualStudioCodeSnippet>()
+                    .AddScoped<IRecipeSerializer, RecipeSerializer>()
+                    .AddScoped<Runner>();
             });
 }

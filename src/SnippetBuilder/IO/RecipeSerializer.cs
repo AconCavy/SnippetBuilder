@@ -8,11 +8,11 @@ internal class RecipeSerializer : IRecipeSerializer
     private readonly string[] _ext = { ".json" };
 
     private readonly IFileProvider _fileProvider;
-    private readonly IFileStreamProvider _fileStreamBroker;
+    private readonly IFileStreamProvider _fileStreamProvider;
 
     public RecipeSerializer(IFileStreamProvider fileStreamProvider, IFileProvider fileProvider)
     {
-        _fileStreamBroker = fileStreamProvider;
+        _fileStreamProvider = fileStreamProvider;
         _fileProvider = fileProvider;
     }
 
@@ -33,7 +33,7 @@ internal class RecipeSerializer : IRecipeSerializer
             }
 
             var lines = new List<string>();
-            await foreach (var line in _fileStreamBroker.ReadLinesAsync(path))
+            await foreach (var line in _fileStreamProvider.ReadLinesAsync(path))
             {
                 lines.Add(line);
             }

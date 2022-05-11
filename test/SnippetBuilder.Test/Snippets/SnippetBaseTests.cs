@@ -20,7 +20,7 @@ public class SnippetBaseTests
 
         SnippetBase sut = new VisualStudioCodeSnippet(fakeFileStreamProvider, mockFileProvider.Object);
 
-        Assert.DoesNotThrow(() => sut.BuildAsync(recipe));
+        Assert.DoesNotThrowAsync(() => sut.BuildAsync(recipe));
         mockFileProvider.Verify(x => x.CreateDirectory(It.IsAny<string>()), Times.Once);
     }
 
@@ -47,7 +47,7 @@ public class SnippetBaseTests
 
         SnippetBase sut = new VisualStudioCodeSnippet(fakeFileStreamProvider, mockFileProvider.Object);
 
-        Assert.DoesNotThrow(() => sut.BuildAsync(recipe));
+        Assert.DoesNotThrowAsync(() => sut.BuildAsync(recipe));
     }
 
     [Test]
@@ -67,7 +67,7 @@ public class SnippetBaseTests
     }
 
     private static Recipe CreateRecipe() =>
-        new Recipe
+        new()
         {
             Name = "HelloSample",
             Output = "./output",

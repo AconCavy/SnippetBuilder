@@ -22,6 +22,9 @@ public class RecipeExtensionsTests
 
         sut = new Recipe { Name = string.Empty, Output = baseRecipe.Output, Input = baseRecipe.Input };
         Assert.That(sut.Validate(), Is.False);
+
+        sut = new Recipe { Name = " ", Output = baseRecipe.Output, Input = baseRecipe.Input };
+        Assert.That(sut.Validate(), Is.False);
     }
 
     [Test]
@@ -32,6 +35,9 @@ public class RecipeExtensionsTests
         Assert.That(sut.Validate(), Is.False);
 
         sut = new Recipe { Name = baseRecipe.Name, Output = string.Empty, Input = baseRecipe.Input };
+        Assert.That(sut.Validate(), Is.False);
+
+        sut = new Recipe { Name = baseRecipe.Name, Output = " ", Input = baseRecipe.Input };
         Assert.That(sut.Validate(), Is.False);
     }
 
@@ -44,8 +50,11 @@ public class RecipeExtensionsTests
 
         sut = new Recipe { Name = baseRecipe.Name, Output = baseRecipe.Output, Input = new[] { string.Empty } };
         Assert.That(sut.Validate(), Is.False);
+
+        sut = new Recipe { Name = baseRecipe.Name, Output = baseRecipe.Output, Input = new[] { " " } };
+        Assert.That(sut.Validate(), Is.False);
     }
 
     private static Recipe CreateRecipe() =>
-        new Recipe { Name = "HelloSample", Output = "./output", Input = new[] { "HelloSample.cs", "directory" } };
+        new() { Name = "HelloSample", Output = "./output", Input = new[] { "HelloSample.cs", "directory" } };
 }
